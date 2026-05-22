@@ -1419,780 +1419,848 @@
     </div>
   </div>
 
-  <script>
-    (function () {
-      "use strict";
+ <script>
+  (function () {
+    "use strict";
 
-      const CONFIG = {
-        ADMIN_DASHBOARD_API: "https://afooyyydhlwngzssgqih.supabase.co/functions/v1/admin-dashboard",
-        ADMIN_HOME_URL: "../"
+    const CONFIG = {
+      ADMIN_DASHBOARD_API: "https://afooyyydhlwngzssgqih.supabase.co/functions/v1/admin-dashboard?api=students",
+      ADMIN_HOME_URL: "../"
+    };
+
+    const STORAGE_KEYS = {
+      TOKEN: "af_admin_session_token",
+      DEVICE: "af_admin_device_id",
+      USER: "af_admin_user",
+      THEME: "academeforge-admin-theme"
+    };
+
+    const state = {
+      students: [],
+      filteredStudents: [],
+      editingStudent: null,
+      loading: false
+    };
+
+    const els = {
+      loader: document.getElementById("afLoader"),
+      loaderTitle: document.getElementById("afLoaderTitle"),
+      loaderText: document.getElementById("afLoaderText"),
+
+      sidebarOverlay: document.getElementById("afSidebarOverlay"),
+      menuToggle: document.getElementById("afMenuToggle"),
+
+      themeToggle: document.getElementById("afThemeToggle"),
+      logoutButton: document.getElementById("afLogoutButton"),
+      refreshButton: document.getElementById("afRefreshButton"),
+
+      adminAvatar: document.getElementById("afAdminAvatar"),
+      adminMiniName: document.getElementById("afAdminMiniName"),
+      adminMiniRole: document.getElementById("afAdminMiniRole"),
+
+      totalStudents: document.getElementById("afTotalStudents"),
+      activeStudents: document.getElementById("afActiveStudents"),
+      verifiedStudents: document.getElementById("afVerifiedStudents"),
+      filteredStudents: document.getElementById("afFilteredStudents"),
+
+      searchInput: document.getElementById("afSearchInput"),
+      statusFilter: document.getElementById("afStatusFilter"),
+      verifiedFilter: document.getElementById("afVerifiedFilter"),
+
+      alert: document.getElementById("afAlert"),
+      tableBody: document.getElementById("afStudentsTableBody"),
+      emptyState: document.getElementById("afEmptyState"),
+
+      editModal: document.getElementById("afEditModal"),
+      closeModalButton: document.getElementById("afCloseModalButton"),
+      cancelEditButton: document.getElementById("afCancelEditButton"),
+      editForm: document.getElementById("afEditForm"),
+
+      editName: document.getElementById("afEditName"),
+      editStudentId: document.getElementById("afEditStudentId"),
+      editMobile: document.getElementById("afEditMobile"),
+      editEmail: document.getElementById("afEditEmail"),
+      editPassword: document.getElementById("afEditPassword"),
+      editStatus: document.getElementById("afEditStatus"),
+      editVerified: document.getElementById("afEditVerified"),
+      editUuid: document.getElementById("afEditUuid"),
+      editDevice: document.getElementById("afEditDevice"),
+      editLastLogin: document.getElementById("afEditLastLogin"),
+      editSessionToken: document.getElementById("afEditSessionToken"),
+      saveEditButton: document.getElementById("afSaveEditButton")
+    };
+
+    function clean(value) {
+      return String(value === null || value === undefined ? "" : value).trim();
+    }
+
+    function normalizeText(value) {
+      return clean(value).toLowerCase().replace(/\s+/g, " ");
+    }
+
+    function safeJsonParse(value, fallback) {
+      try {
+        const parsed = JSON.parse(value);
+        return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : fallback;
+      } catch (_error) {
+        return fallback;
+      }
+    }
+
+    function getToken() {
+      return clean(localStorage.getItem(STORAGE_KEYS.TOKEN));
+    }
+
+    function getDeviceId() {
+      return clean(localStorage.getItem(STORAGE_KEYS.DEVICE));
+    }
+
+    function getStoredUser() {
+      return safeJsonParse(localStorage.getItem(STORAGE_KEYS.USER) || "{}", {});
+    }
+
+    function hasSession() {
+      const token = getToken();
+      const deviceId = getDeviceId();
+      return Boolean(token && token.length >= 32 && deviceId);
+    }
+
+    function redirectToLogin() {
+      window.location.replace(CONFIG.ADMIN_HOME_URL);
+    }
+
+    function clearSession() {
+      localStorage.removeItem(STORAGE_KEYS.TOKEN);
+      localStorage.removeItem(STORAGE_KEYS.DEVICE);
+      localStorage.removeItem(STORAGE_KEYS.USER);
+    }
+
+    function logout() {
+      clearSession();
+      redirectToLogin();
+    }
+
+    function getPreferredTheme() {
+      const saved = localStorage.getItem(STORAGE_KEYS.THEME);
+
+      if (saved === "light" || saved === "dark") {
+        return saved;
+      }
+
+      if (window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches) {
+        return "light";
+      }
+
+      return "dark";
+    }
+
+    function applyTheme(theme) {
+      const nextTheme = theme === "light" ? "light" : "dark";
+
+      document.documentElement.setAttribute("data-theme", nextTheme);
+      localStorage.setItem(STORAGE_KEYS.THEME, nextTheme);
+
+      if (els.themeToggle) {
+        els.themeToggle.textContent = nextTheme === "dark" ? "🌙" : "☀️";
+      }
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute("data-theme") === "light" ? "light" : "dark";
+      applyTheme(current === "light" ? "dark" : "light");
+    }
+
+    function setLoader(active, title, text) {
+      state.loading = Boolean(active);
+
+      if (els.loader) {
+        els.loader.classList.toggle("af-active", Boolean(active));
+      }
+
+      if (els.loaderTitle && title) {
+        els.loaderTitle.textContent = title;
+      }
+
+      if (els.loaderText && text) {
+        els.loaderText.textContent = text;
+      }
+    }
+
+    function setAlert(type, message) {
+      if (!els.alert) {
+        return;
+      }
+
+      const cleanMessage = clean(message);
+
+      if (!cleanMessage) {
+        els.alert.className = "af-alert";
+        els.alert.textContent = "";
+        return;
+      }
+
+      const alertType = type === "success" ? "af-success" : type === "info" ? "af-info" : "af-error";
+      els.alert.className = "af-alert af-show " + alertType;
+      els.alert.textContent = cleanMessage;
+    }
+
+    function getInitials(name) {
+      const cleaned = clean(name);
+
+      if (!cleaned) {
+        return "AF";
+      }
+
+      const parts = cleaned.split(/\s+/).filter(Boolean);
+
+      if (parts.length === 1) {
+        return parts[0].slice(0, 2).toUpperCase();
+      }
+
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+
+    function renderAdminIdentity() {
+      const user = getStoredUser();
+
+      const adminName =
+        clean(user.full_name) ||
+        clean(user.name) ||
+        clean(user.admin_id) ||
+        "Admin";
+
+      const adminRole =
+        clean(user.role) ||
+        "Active Session";
+
+      if (els.adminAvatar) {
+        els.adminAvatar.textContent = getInitials(adminName);
+      }
+
+      if (els.adminMiniName) {
+        els.adminMiniName.textContent = adminName;
+      }
+
+      if (els.adminMiniRole) {
+        els.adminMiniRole.textContent = adminRole;
+      }
+    }
+
+    function formatDate(value) {
+      const raw = clean(value);
+
+      if (!raw) {
+        return "-";
+      }
+
+      const date = new Date(raw);
+
+      if (Number.isNaN(date.getTime())) {
+        return raw;
+      }
+
+      return date.toLocaleString("en-IN", {
+        year: "numeric",
+        month: "short",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    }
+
+    function maskToken(value) {
+      const token = clean(value);
+
+      if (!token) {
+        return "-";
+      }
+
+      if (token.length <= 14) {
+        return token;
+      }
+
+      return token.slice(0, 8) + "..." + token.slice(-6);
+    }
+
+    function escapeHtml(value) {
+      return clean(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function normalizeStatus(value) {
+      const status = normalizeText(value);
+
+      if (status === "blocked") {
+        return "blocked";
+      }
+
+      if (status === "active") {
+        return "active";
+      }
+
+      return "inactive";
+    }
+
+    function normalizeBoolean(value) {
+      return value === true || String(value).toLowerCase() === "true";
+    }
+
+    function normalizeStudent(raw) {
+      const student = raw && typeof raw === "object" ? raw : {};
+
+      const lastLogin =
+        clean(student.last_login) ||
+        clean(student.last_login_at) ||
+        clean(student.active_login_at);
+
+      return {
+        id: clean(student.id),
+        created_at: clean(student.created_at),
+        active_session_token: clean(student.active_session_token),
+        active_device_id: clean(student.active_device_id),
+        active_device_name: clean(student.active_device_name),
+        active_login_at: clean(student.active_login_at),
+        last_login: lastLogin,
+        last_login_at: clean(student.last_login_at),
+        name: clean(student.name),
+        mobile: clean(student.mobile),
+        password: clean(student.password),
+        email: clean(student.email),
+        status: normalizeStatus(student.status),
+        email_verified: normalizeBoolean(student.email_verified),
+        student_id: clean(student.student_id)
       };
+    }
 
-      const STORAGE_KEYS = {
-        TOKEN: "af_admin_session_token",
-        DEVICE: "af_admin_device_id",
-        USER: "af_admin_user",
-        THEME: "academeforge-admin-theme"
-      };
-
-      const state = {
-        students: [],
-        filteredStudents: [],
-        editingStudent: null,
-        loading: false
-      };
-
-      const els = {
-        loader: document.getElementById("afLoader"),
-        loaderTitle: document.getElementById("afLoaderTitle"),
-        loaderText: document.getElementById("afLoaderText"),
-
-        sidebarOverlay: document.getElementById("afSidebarOverlay"),
-        menuToggle: document.getElementById("afMenuToggle"),
-
-        themeToggle: document.getElementById("afThemeToggle"),
-        logoutButton: document.getElementById("afLogoutButton"),
-        refreshButton: document.getElementById("afRefreshButton"),
-
-        adminAvatar: document.getElementById("afAdminAvatar"),
-        adminMiniName: document.getElementById("afAdminMiniName"),
-        adminMiniRole: document.getElementById("afAdminMiniRole"),
-
-        totalStudents: document.getElementById("afTotalStudents"),
-        activeStudents: document.getElementById("afActiveStudents"),
-        verifiedStudents: document.getElementById("afVerifiedStudents"),
-        filteredStudents: document.getElementById("afFilteredStudents"),
-
-        searchInput: document.getElementById("afSearchInput"),
-        statusFilter: document.getElementById("afStatusFilter"),
-        verifiedFilter: document.getElementById("afVerifiedFilter"),
-
-        alert: document.getElementById("afAlert"),
-        tableBody: document.getElementById("afStudentsTableBody"),
-        emptyState: document.getElementById("afEmptyState"),
-
-        editModal: document.getElementById("afEditModal"),
-        closeModalButton: document.getElementById("afCloseModalButton"),
-        cancelEditButton: document.getElementById("afCancelEditButton"),
-        editForm: document.getElementById("afEditForm"),
-
-        editName: document.getElementById("afEditName"),
-        editStudentId: document.getElementById("afEditStudentId"),
-        editMobile: document.getElementById("afEditMobile"),
-        editEmail: document.getElementById("afEditEmail"),
-        editPassword: document.getElementById("afEditPassword"),
-        editStatus: document.getElementById("afEditStatus"),
-        editVerified: document.getElementById("afEditVerified"),
-        editUuid: document.getElementById("afEditUuid"),
-        editDevice: document.getElementById("afEditDevice"),
-        editLastLogin: document.getElementById("afEditLastLogin"),
-        editSessionToken: document.getElementById("afEditSessionToken"),
-        saveEditButton: document.getElementById("afSaveEditButton")
-      };
-
-      function clean(value) {
-        return String(value === null || value === undefined ? "" : value).trim();
+    function extractStudents(payload) {
+      if (Array.isArray(payload)) {
+        return payload.map(normalizeStudent);
       }
 
-      function normalizeText(value) {
-        return clean(value).toLowerCase().replace(/\s+/g, " ");
-      }
-
-      function safeJsonParse(value, fallback) {
-        try {
-          const parsed = JSON.parse(value);
-          return parsed && typeof parsed === "object" ? parsed : fallback;
-        } catch (_error) {
-          return fallback;
-        }
-      }
-
-      function getToken() {
-        return clean(localStorage.getItem(STORAGE_KEYS.TOKEN));
-      }
-
-      function getDeviceId() {
-        return clean(localStorage.getItem(STORAGE_KEYS.DEVICE));
-      }
-
-      function getStoredUser() {
-        return safeJsonParse(localStorage.getItem(STORAGE_KEYS.USER) || "{}", {});
-      }
-
-      function hasSession() {
-        const token = getToken();
-        const deviceId = getDeviceId();
-        return Boolean(token && token.length >= 32 && deviceId);
-      }
-
-      function redirectToLogin() {
-        window.location.replace(CONFIG.ADMIN_HOME_URL);
-      }
-
-      function clearSession() {
-        localStorage.removeItem(STORAGE_KEYS.TOKEN);
-        localStorage.removeItem(STORAGE_KEYS.DEVICE);
-        localStorage.removeItem(STORAGE_KEYS.USER);
-      }
-
-      function logout() {
-        clearSession();
-        redirectToLogin();
-      }
-
-      function getPreferredTheme() {
-        const saved = localStorage.getItem(STORAGE_KEYS.THEME);
-        if (saved === "light" || saved === "dark") {
-          return saved;
-        }
-
-        if (window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches) {
-          return "light";
-        }
-
-        return "dark";
-      }
-
-      function applyTheme(theme) {
-        const nextTheme = theme === "light" ? "light" : "dark";
-        document.documentElement.setAttribute("data-theme", nextTheme);
-        localStorage.setItem(STORAGE_KEYS.THEME, nextTheme);
-
-        if (els.themeToggle) {
-          els.themeToggle.textContent = nextTheme === "dark" ? "🌙" : "☀️";
-        }
-      }
-
-      function toggleTheme() {
-        const current = document.documentElement.getAttribute("data-theme") === "light" ? "light" : "dark";
-        applyTheme(current === "light" ? "dark" : "light");
-      }
-
-      function setLoader(active, title, text) {
-        state.loading = Boolean(active);
-
-        if (els.loader) {
-          els.loader.classList.toggle("af-active", Boolean(active));
-        }
-
-        if (els.loaderTitle && title) {
-          els.loaderTitle.textContent = title;
-        }
-
-        if (els.loaderText && text) {
-          els.loaderText.textContent = text;
-        }
-      }
-
-      function setAlert(type, message) {
-        if (!els.alert) {
-          return;
-        }
-
-        const cleanMessage = clean(message);
-
-        if (!cleanMessage) {
-          els.alert.className = "af-alert";
-          els.alert.textContent = "";
-          return;
-        }
-
-        const alertType = type === "success" ? "af-success" : type === "info" ? "af-info" : "af-error";
-        els.alert.className = "af-alert af-show " + alertType;
-        els.alert.textContent = cleanMessage;
-      }
-
-      function getInitials(name) {
-        const cleaned = clean(name);
-
-        if (!cleaned) {
-          return "AF";
-        }
-
-        const parts = cleaned.split(/\s+/).filter(Boolean);
-
-        if (parts.length === 1) {
-          return parts[0].slice(0, 2).toUpperCase();
-        }
-
-        return (parts[0][0] + parts[1][0]).toUpperCase();
-      }
-
-      function renderAdminIdentity() {
-        const user = getStoredUser();
-
-        const adminName =
-          clean(user.full_name) ||
-          clean(user.name) ||
-          clean(user.admin_id) ||
-          "Admin";
-
-        const adminRole =
-          clean(user.role) ||
-          "Active Session";
-
-        if (els.adminAvatar) {
-          els.adminAvatar.textContent = getInitials(adminName);
-        }
-
-        if (els.adminMiniName) {
-          els.adminMiniName.textContent = adminName;
-        }
-
-        if (els.adminMiniRole) {
-          els.adminMiniRole.textContent = adminRole;
-        }
-      }
-
-      function formatDate(value) {
-        const raw = clean(value);
-
-        if (!raw) {
-          return "-";
-        }
-
-        const date = new Date(raw);
-
-        if (Number.isNaN(date.getTime())) {
-          return raw;
-        }
-
-        return date.toLocaleString("en-IN", {
-          year: "numeric",
-          month: "short",
-          day: "2-digit",
-          hour: "2-digit",
-          minute: "2-digit"
-        });
-      }
-
-      function maskToken(value) {
-        const token = clean(value);
-
-        if (!token) {
-          return "-";
-        }
-
-        if (token.length <= 14) {
-          return token;
-        }
-
-        return token.slice(0, 8) + "..." + token.slice(-6);
-      }
-
-      function escapeHtml(value) {
-        return clean(value)
-          .replace(/&/g, "&amp;")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;")
-          .replace(/"/g, "&quot;")
-          .replace(/'/g, "&#039;");
-      }
-
-      function normalizeStudent(raw) {
-        const student = raw && typeof raw === "object" ? raw : {};
-
-        return {
-          id: clean(student.id),
-          created_at: clean(student.created_at),
-          active_session_token: clean(student.active_session_token),
-          active_device_id: clean(student.active_device_id),
-          active_device_name: clean(student.active_device_name),
-          active_login_at: clean(student.active_login_at),
-          last_login_at: clean(student.last_login_at),
-          name: clean(student.name),
-          mobile: clean(student.mobile),
-          password: clean(student.password),
-          email: clean(student.email),
-          status: clean(student.status) || "inactive",
-          email_verified: Boolean(student.email_verified),
-          student_id: clean(student.student_id)
-        };
-      }
-
-      function extractStudents(payload) {
-        if (Array.isArray(payload)) {
-          return payload.map(normalizeStudent);
-        }
-
-        if (!payload || typeof payload !== "object") {
-          return [];
-        }
-
-        if (Array.isArray(payload.students)) {
-          return payload.students.map(normalizeStudent);
-        }
-
-        if (Array.isArray(payload.data)) {
-          return payload.data.map(normalizeStudent);
-        }
-
-        if (payload.data && Array.isArray(payload.data.students)) {
-          return payload.data.students.map(normalizeStudent);
-        }
-
+      if (!payload || typeof payload !== "object") {
         return [];
       }
 
-      async function callAdminApi(body) {
-        if (!hasSession()) {
-          logout();
-          throw new Error("Admin session missing.");
-        }
-
-        const response = await fetch(CONFIG.ADMIN_DASHBOARD_API, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + getToken(),
-            "x-admin-token": getToken(),
-            "x-device-id": getDeviceId()
-          },
-          body: JSON.stringify(body),
-          cache: "no-store"
-        });
-
-        const responseText = await response.text();
-        let payload = {};
-
-        try {
-          payload = responseText ? JSON.parse(responseText) : {};
-        } catch (_error) {
-          throw new Error("Backend returned invalid JSON response.");
-        }
-
-        if (response.status === 401 || response.status === 403) {
-          clearSession();
-          throw new Error(clean(payload.message) || "Admin session expired. Login again.");
-        }
-
-        if (!response.ok || payload.ok === false) {
-          throw new Error(clean(payload.message) || "Backend request failed.");
-        }
-
-        return payload;
+      if (Array.isArray(payload.students)) {
+        return payload.students.map(normalizeStudent);
       }
 
-      async function loadStudents() {
-        try {
-          setAlert("info", "Fetching students from backend...");
-          setLoader(true, "Loading students", "Fetching records from protected backend API.");
+      if (Array.isArray(payload.data)) {
+        return payload.data.map(normalizeStudent);
+      }
 
-          const payload = await callAdminApi({
-            page: "students",
-            action: "list"
-          });
+      if (payload.data && Array.isArray(payload.data.students)) {
+        return payload.data.students.map(normalizeStudent);
+      }
 
-          state.students = extractStudents(payload);
-          applyFilters();
+      return [];
+    }
+
+    async function callAdminApi(body) {
+      if (!hasSession()) {
+        clearSession();
+        redirectToLogin();
+        throw new Error("Admin session missing.");
+      }
+
+      const response = await fetch(CONFIG.ADMIN_DASHBOARD_API, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + getToken(),
+          "x-admin-token": getToken(),
+          "x-device-id": getDeviceId()
+        },
+        body: JSON.stringify(body),
+        cache: "no-store"
+      });
+
+      const responseText = await response.text();
+      let payload = {};
+
+      try {
+        payload = responseText ? JSON.parse(responseText) : {};
+      } catch (_error) {
+        throw new Error("Backend returned invalid JSON response.");
+      }
+
+      if (response.status === 401 || response.status === 403) {
+        clearSession();
+        throw new Error(clean(payload.message) || "Admin session expired. Login again.");
+      }
+
+      if (!response.ok || !payload || payload.ok !== true) {
+        throw new Error(clean(payload && payload.message) || "Backend request failed.");
+      }
+
+      return payload;
+    }
+
+    async function loadStudents() {
+      try {
+        setAlert("info", "Fetching students from backend...");
+        setLoader(true, "Loading students", "Fetching records from protected backend API.");
+
+        const payload = await callAdminApi({
+          action: "list"
+        });
+
+        state.students = extractStudents(payload);
+        applyFilters();
+
+        if (state.students.length) {
           setAlert("success", "Students loaded successfully.");
-        } catch (error) {
-          const message = error instanceof Error ? error.message : "Unable to load students.";
-
-          if (message.toLowerCase().includes("session")) {
-            setAlert("error", message);
-            setTimeout(redirectToLogin, 900);
-          } else {
-            setAlert("error", message);
-          }
-
-          state.students = [];
-          applyFilters();
-        } finally {
-          setLoader(false);
+        } else {
+          setAlert("info", "No students found.");
         }
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "Unable to load students.";
+
+        if (message.toLowerCase().includes("session") || message.toLowerCase().includes("unauthorized")) {
+          setAlert("error", message);
+          setTimeout(redirectToLogin, 900);
+        } else {
+          setAlert("error", message);
+        }
+
+        state.students = [];
+        applyFilters();
+      } finally {
+        setLoader(false);
+      }
+    }
+
+    function getSearchText(student) {
+      return normalizeText([
+        student.id,
+        student.name,
+        student.mobile,
+        student.password,
+        student.email,
+        student.status,
+        student.student_id,
+        student.active_device_id,
+        student.active_device_name,
+        student.active_login_at,
+        student.last_login,
+        student.last_login_at,
+        student.created_at
+      ].join(" "));
+    }
+
+    function applyFilters() {
+      const query = normalizeText(els.searchInput ? els.searchInput.value : "");
+      const statusFilter = els.statusFilter ? els.statusFilter.value : "all";
+      const verifiedFilter = els.verifiedFilter ? els.verifiedFilter.value : "all";
+
+      state.filteredStudents = state.students.filter(function (student) {
+        const searchMatches = !query || getSearchText(student).includes(query);
+
+        const status = normalizeText(student.status);
+        const statusMatches =
+          statusFilter === "all" ||
+          (statusFilter === "active" && status === "active") ||
+          (statusFilter === "inactive" && status !== "active");
+
+        const verifiedMatches =
+          verifiedFilter === "all" ||
+          (verifiedFilter === "verified" && student.email_verified) ||
+          (verifiedFilter === "unverified" && !student.email_verified);
+
+        return searchMatches && statusMatches && verifiedMatches;
+      });
+
+      renderStats();
+      renderTable();
+    }
+
+    function renderStats() {
+      const total = state.students.length;
+      const active = state.students.filter(function (student) {
+        return normalizeText(student.status) === "active";
+      }).length;
+      const verified = state.students.filter(function (student) {
+        return Boolean(student.email_verified);
+      }).length;
+      const filtered = state.filteredStudents.length;
+
+      if (els.totalStudents) {
+        els.totalStudents.textContent = String(total);
       }
 
-      function getSearchText(student) {
-        return normalizeText([
-          student.id,
-          student.name,
-          student.mobile,
-          student.password,
-          student.email,
-          student.status,
-          student.student_id,
-          student.active_device_id,
-          student.active_device_name,
-          student.active_login_at,
-          student.last_login_at,
-          student.created_at
-        ].join(" "));
+      if (els.activeStudents) {
+        els.activeStudents.textContent = String(active);
       }
 
-      function applyFilters() {
-        const query = normalizeText(els.searchInput ? els.searchInput.value : "");
-        const statusFilter = els.statusFilter ? els.statusFilter.value : "all";
-        const verifiedFilter = els.verifiedFilter ? els.verifiedFilter.value : "all";
-
-        state.filteredStudents = state.students.filter(function (student) {
-          const searchMatches = !query || getSearchText(student).includes(query);
-
-          const status = normalizeText(student.status);
-          const statusMatches =
-            statusFilter === "all" ||
-            (statusFilter === "active" && status === "active") ||
-            (statusFilter === "inactive" && status !== "active");
-
-          const verifiedMatches =
-            verifiedFilter === "all" ||
-            (verifiedFilter === "verified" && student.email_verified) ||
-            (verifiedFilter === "unverified" && !student.email_verified);
-
-          return searchMatches && statusMatches && verifiedMatches;
-        });
-
-        renderStats();
-        renderTable();
+      if (els.verifiedStudents) {
+        els.verifiedStudents.textContent = String(verified);
       }
 
-      function renderStats() {
-        const total = state.students.length;
-        const active = state.students.filter(function (student) {
-          return normalizeText(student.status) === "active";
-        }).length;
-        const verified = state.students.filter(function (student) {
-          return Boolean(student.email_verified);
-        }).length;
-        const filtered = state.filteredStudents.length;
+      if (els.filteredStudents) {
+        els.filteredStudents.textContent = String(filtered);
+      }
+    }
 
-        if (els.totalStudents) {
-          els.totalStudents.textContent = String(total);
-        }
-
-        if (els.activeStudents) {
-          els.activeStudents.textContent = String(active);
-        }
-
-        if (els.verifiedStudents) {
-          els.verifiedStudents.textContent = String(verified);
-        }
-
-        if (els.filteredStudents) {
-          els.filteredStudents.textContent = String(filtered);
-        }
+    function renderTable() {
+      if (!els.tableBody) {
+        return;
       }
 
-      function renderTable() {
-        if (!els.tableBody) {
-          return;
-        }
-
-        if (!state.filteredStudents.length) {
-          els.tableBody.innerHTML = "";
-          if (els.emptyState) {
-            els.emptyState.classList.add("af-show");
-          }
-          return;
-        }
+      if (!state.filteredStudents.length) {
+        els.tableBody.innerHTML = "";
 
         if (els.emptyState) {
-          els.emptyState.classList.remove("af-show");
+          els.emptyState.classList.add("af-show");
         }
 
-        els.tableBody.innerHTML = state.filteredStudents.map(function (student) {
-          const statusClass = normalizeText(student.status) === "active" ? "af-pill-active" : "af-pill-inactive";
-          const verifiedClass = student.email_verified ? "af-pill-active" : "af-pill-neutral";
-          const verifiedText = student.email_verified ? "TRUE" : "FALSE";
-          const deviceText = clean(student.active_device_name) || clean(student.active_device_id) || "-";
-
-          return [
-            "<tr data-id=\"" + escapeHtml(student.id) + "\">",
-              "<td>",
-                "<div class=\"af-student-name\">" + escapeHtml(student.name || "-") + "</div>",
-                "<div class=\"af-muted\">" + escapeHtml(student.id || "-") + "</div>",
-              "</td>",
-              "<td>" + escapeHtml(student.student_id || "-") + "</td>",
-              "<td>" + escapeHtml(student.mobile || "-") + "</td>",
-              "<td>" + escapeHtml(student.email || "-") + "</td>",
-              "<td>" + escapeHtml(student.password || "-") + "</td>",
-              "<td><span class=\"af-pill " + statusClass + "\">" + escapeHtml(student.status || "-") + "</span></td>",
-              "<td><span class=\"af-pill " + verifiedClass + "\">" + verifiedText + "</span></td>",
-              "<td>" + escapeHtml(deviceText) + "</td>",
-              "<td>" + escapeHtml(formatDate(student.last_login_at || student.active_login_at)) + "</td>",
-              "<td>" + escapeHtml(formatDate(student.created_at)) + "</td>",
-              "<td>",
-                "<div class=\"af-row-actions\">",
-                  "<button class=\"af-row-button af-edit\" type=\"button\" data-action=\"edit\" data-id=\"" + escapeHtml(student.id) + "\">Edit</button>",
-                  "<button class=\"af-row-button af-delete\" type=\"button\" data-action=\"delete\" data-id=\"" + escapeHtml(student.id) + "\">Delete</button>",
-                "</div>",
-              "</td>",
-            "</tr>"
-          ].join("");
-        }).join("");
+        return;
       }
 
-      function findStudentById(id) {
-        const cleanId = clean(id);
-        return state.students.find(function (student) {
-          return student.id === cleanId;
-        }) || null;
+      if (els.emptyState) {
+        els.emptyState.classList.remove("af-show");
       }
 
-      function openEditModal(student) {
-        if (!student || !els.editModal) {
-          return;
-        }
+      els.tableBody.innerHTML = state.filteredStudents.map(function (student) {
+        const statusClass = normalizeText(student.status) === "active" ? "af-pill-active" : "af-pill-inactive";
+        const verifiedClass = student.email_verified ? "af-pill-active" : "af-pill-neutral";
+        const verifiedText = student.email_verified ? "TRUE" : "FALSE";
+        const deviceText = clean(student.active_device_name) || clean(student.active_device_id) || "-";
+        const lastLoginText = clean(student.last_login) || clean(student.last_login_at) || clean(student.active_login_at);
 
-        state.editingStudent = student;
+        return [
+          "<tr data-id=\"" + escapeHtml(student.id) + "\">",
+            "<td>",
+              "<div class=\"af-student-name\">" + escapeHtml(student.name || "-") + "</div>",
+              "<div class=\"af-muted\">" + escapeHtml(student.id || "-") + "</div>",
+            "</td>",
+            "<td>" + escapeHtml(student.student_id || "-") + "</td>",
+            "<td>" + escapeHtml(student.mobile || "-") + "</td>",
+            "<td>" + escapeHtml(student.email || "-") + "</td>",
+            "<td>" + escapeHtml(student.password || "-") + "</td>",
+            "<td><span class=\"af-pill " + statusClass + "\">" + escapeHtml(student.status || "-") + "</span></td>",
+            "<td><span class=\"af-pill " + verifiedClass + "\">" + verifiedText + "</span></td>",
+            "<td>" + escapeHtml(deviceText) + "</td>",
+            "<td>" + escapeHtml(formatDate(lastLoginText)) + "</td>",
+            "<td>" + escapeHtml(formatDate(student.created_at)) + "</td>",
+            "<td>",
+              "<div class=\"af-row-actions\">",
+                "<button class=\"af-row-button af-edit\" type=\"button\" data-action=\"edit\" data-id=\"" + escapeHtml(student.id) + "\">Edit</button>",
+                "<button class=\"af-row-button af-delete\" type=\"button\" data-action=\"delete\" data-id=\"" + escapeHtml(student.id) + "\">Delete</button>",
+              "</div>",
+            "</td>",
+          "</tr>"
+        ].join("");
+      }).join("");
+    }
 
+    function findStudentById(id) {
+      const cleanId = clean(id);
+
+      return state.students.find(function (student) {
+        return student.id === cleanId;
+      }) || null;
+    }
+
+    function openEditModal(student) {
+      if (!student || !els.editModal) {
+        return;
+      }
+
+      state.editingStudent = student;
+
+      if (els.editName) {
         els.editName.value = student.name;
+      }
+
+      if (els.editStudentId) {
         els.editStudentId.value = student.student_id;
+      }
+
+      if (els.editMobile) {
         els.editMobile.value = student.mobile;
+      }
+
+      if (els.editEmail) {
         els.editEmail.value = student.email;
+      }
+
+      if (els.editPassword) {
         els.editPassword.value = student.password;
+      }
+
+      if (els.editStatus) {
         els.editStatus.value = student.status || "inactive";
+      }
+
+      if (els.editVerified) {
         els.editVerified.value = student.email_verified ? "true" : "false";
+      }
 
+      if (els.editUuid) {
         els.editUuid.textContent = student.id || "-";
+      }
+
+      if (els.editDevice) {
         els.editDevice.textContent = clean(student.active_device_name) || clean(student.active_device_id) || "-";
-        els.editLastLogin.textContent = formatDate(student.last_login_at || student.active_login_at);
+      }
+
+      if (els.editLastLogin) {
+        els.editLastLogin.textContent = formatDate(student.last_login || student.last_login_at || student.active_login_at);
+      }
+
+      if (els.editSessionToken) {
         els.editSessionToken.textContent = maskToken(student.active_session_token);
+      }
 
-        els.editModal.classList.add("af-active");
+      els.editModal.classList.add("af-active");
 
-        setTimeout(function () {
+      setTimeout(function () {
+        if (els.editName) {
           els.editName.focus();
-        }, 80);
+        }
+      }, 80);
+    }
+
+    function closeEditModal() {
+      if (els.editModal) {
+        els.editModal.classList.remove("af-active");
       }
 
-      function closeEditModal() {
-        if (els.editModal) {
-          els.editModal.classList.remove("af-active");
-        }
+      state.editingStudent = null;
+    }
 
-        state.editingStudent = null;
+    function validatePatch(patch) {
+      if (!clean(patch.name)) {
+        throw new Error("Student name is required.");
       }
 
-      function validatePatch(patch) {
-        if (!clean(patch.name)) {
-          throw new Error("Student name is required.");
-        }
-
-        if (!clean(patch.student_id)) {
-          throw new Error("Student ID is required.");
-        }
-
-        if (!clean(patch.mobile)) {
-          throw new Error("Mobile is required.");
-        }
-
-        if (!clean(patch.password)) {
-          throw new Error("Password is required.");
-        }
-
-        if (clean(patch.email) && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clean(patch.email))) {
-          throw new Error("Enter a valid email address.");
-        }
-
-        if (!["active", "inactive", "blocked"].includes(clean(patch.status))) {
-          throw new Error("Invalid status selected.");
-        }
+      if (!clean(patch.student_id)) {
+        throw new Error("Student ID is required.");
       }
 
-      async function saveStudent(event) {
-        event.preventDefault();
+      if (!clean(patch.mobile)) {
+        throw new Error("Mobile is required.");
+      }
 
-        if (!state.editingStudent) {
-          setAlert("error", "No student selected.");
-          return;
+      if (!clean(patch.password)) {
+        throw new Error("Password is required.");
+      }
+
+      if (clean(patch.email) && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clean(patch.email))) {
+        throw new Error("Enter a valid email address.");
+      }
+
+      if (!["active", "inactive", "blocked"].includes(clean(patch.status))) {
+        throw new Error("Invalid status selected.");
+      }
+    }
+
+    async function saveStudent(event) {
+      event.preventDefault();
+
+      if (!state.editingStudent) {
+        setAlert("error", "No student selected.");
+        return;
+      }
+
+      const patch = {
+        id: clean(state.editingStudent.id),
+        name: clean(els.editName ? els.editName.value : ""),
+        student_id: clean(els.editStudentId ? els.editStudentId.value : ""),
+        mobile: clean(els.editMobile ? els.editMobile.value : ""),
+        email: clean(els.editEmail ? els.editEmail.value : ""),
+        password: clean(els.editPassword ? els.editPassword.value : ""),
+        status: normalizeStatus(els.editStatus ? els.editStatus.value : "inactive"),
+        email_verified: els.editVerified ? els.editVerified.value === "true" : false
+      };
+
+      try {
+        validatePatch(patch);
+
+        if (els.saveEditButton) {
+          els.saveEditButton.disabled = true;
+          els.saveEditButton.textContent = "Saving...";
         }
 
-        const patch = {
-          name: clean(els.editName.value),
-          student_id: clean(els.editStudentId.value),
-          mobile: clean(els.editMobile.value),
-          email: clean(els.editEmail.value),
-          password: clean(els.editPassword.value),
-          status: clean(els.editStatus.value),
-          email_verified: els.editVerified.value === "true"
-        };
+        setLoader(true, "Updating student", "Saving changes through protected backend API.");
 
-        try {
-          validatePatch(patch);
+        await callAdminApi({
+          action: "update",
+          payload: patch
+        });
 
-          if (els.saveEditButton) {
-            els.saveEditButton.disabled = true;
-            els.saveEditButton.textContent = "Saving...";
+        closeEditModal();
+        setAlert("success", "Student updated successfully.");
+        await loadStudents();
+      } catch (error) {
+        setAlert("error", error instanceof Error ? error.message : "Unable to update student.");
+      } finally {
+        if (els.saveEditButton) {
+          els.saveEditButton.disabled = false;
+          els.saveEditButton.textContent = "Save Changes";
+        }
+
+        setLoader(false);
+      }
+    }
+
+    async function deleteStudent(student) {
+      if (!student) {
+        setAlert("error", "Student not found.");
+        return;
+      }
+
+      const label = student.name || student.student_id || student.mobile || student.id;
+      const confirmed = window.confirm("Delete student: " + label + "?\n\nThis action will be sent to backend.");
+
+      if (!confirmed) {
+        return;
+      }
+
+      try {
+        setLoader(true, "Deleting student", "Deleting record through protected backend API.");
+
+        await callAdminApi({
+          action: "delete",
+          payload: {
+            id: student.id
           }
+        });
 
-          setLoader(true, "Updating student", "Saving changes through protected backend API.");
+        setAlert("success", "Student deleted successfully.");
+        await loadStudents();
+      } catch (error) {
+        setAlert("error", error instanceof Error ? error.message : "Unable to delete student.");
+      } finally {
+        setLoader(false);
+      }
+    }
 
-          await callAdminApi({
-            page: "students",
-            action: "update",
-            id: state.editingStudent.id,
-            student_id: state.editingStudent.student_id,
-            patch: patch
-          });
+    function handleTableClick(event) {
+      const button = event.target.closest("[data-action][data-id]");
 
-          closeEditModal();
-          setAlert("success", "Student updated successfully.");
-          await loadStudents();
-        } catch (error) {
-          setAlert("error", error instanceof Error ? error.message : "Unable to update student.");
-        } finally {
-          if (els.saveEditButton) {
-            els.saveEditButton.disabled = false;
-            els.saveEditButton.textContent = "Save Changes";
-          }
-
-          setLoader(false);
-        }
+      if (!button) {
+        return;
       }
 
-      async function deleteStudent(student) {
-        if (!student) {
-          setAlert("error", "Student not found.");
-          return;
-        }
+      const action = button.getAttribute("data-action");
+      const id = button.getAttribute("data-id");
+      const student = findStudentById(id);
 
-        const label = student.name || student.student_id || student.mobile || student.id;
-        const confirmed = window.confirm("Delete student: " + label + "?\n\nThis action will be sent to backend.");
-
-        if (!confirmed) {
-          return;
-        }
-
-        try {
-          setLoader(true, "Deleting student", "Deleting record through protected backend API.");
-
-          await callAdminApi({
-            page: "students",
-            action: "delete",
-            id: student.id,
-            student_id: student.student_id
-          });
-
-          setAlert("success", "Student deleted successfully.");
-          await loadStudents();
-        } catch (error) {
-          setAlert("error", error instanceof Error ? error.message : "Unable to delete student.");
-        } finally {
-          setLoader(false);
-        }
+      if (action === "edit") {
+        openEditModal(student);
+        return;
       }
 
-      function handleTableClick(event) {
-        const button = event.target.closest("[data-action][data-id]");
+      if (action === "delete") {
+        deleteStudent(student);
+      }
+    }
 
-        if (!button) {
-          return;
-        }
+    function closeSidebar() {
+      document.body.classList.remove("af-sidebar-open");
+    }
 
-        const action = button.getAttribute("data-action");
-        const id = button.getAttribute("data-id");
-        const student = findStudentById(id);
+    function toggleSidebar() {
+      document.body.classList.toggle("af-sidebar-open");
+    }
 
-        if (action === "edit") {
-          openEditModal(student);
-          return;
-        }
-
-        if (action === "delete") {
-          deleteStudent(student);
-        }
+    function bindEvents() {
+      if (els.themeToggle) {
+        els.themeToggle.addEventListener("click", toggleTheme);
       }
 
-      function closeSidebar() {
-        document.body.classList.remove("af-sidebar-open");
+      if (els.logoutButton) {
+        els.logoutButton.addEventListener("click", logout);
       }
 
-      function toggleSidebar() {
-        document.body.classList.toggle("af-sidebar-open");
+      if (els.refreshButton) {
+        els.refreshButton.addEventListener("click", loadStudents);
       }
 
-      function bindEvents() {
-        if (els.themeToggle) {
-          els.themeToggle.addEventListener("click", toggleTheme);
-        }
+      if (els.searchInput) {
+        els.searchInput.addEventListener("input", applyFilters);
+      }
 
-        if (els.logoutButton) {
-          els.logoutButton.addEventListener("click", logout);
-        }
+      if (els.statusFilter) {
+        els.statusFilter.addEventListener("change", applyFilters);
+      }
 
-        if (els.refreshButton) {
-          els.refreshButton.addEventListener("click", loadStudents);
-        }
+      if (els.verifiedFilter) {
+        els.verifiedFilter.addEventListener("change", applyFilters);
+      }
 
-        if (els.searchInput) {
-          els.searchInput.addEventListener("input", applyFilters);
-        }
+      if (els.tableBody) {
+        els.tableBody.addEventListener("click", handleTableClick);
+      }
 
-        if (els.statusFilter) {
-          els.statusFilter.addEventListener("change", applyFilters);
-        }
+      if (els.closeModalButton) {
+        els.closeModalButton.addEventListener("click", closeEditModal);
+      }
 
-        if (els.verifiedFilter) {
-          els.verifiedFilter.addEventListener("change", applyFilters);
-        }
+      if (els.cancelEditButton) {
+        els.cancelEditButton.addEventListener("click", closeEditModal);
+      }
 
-        if (els.tableBody) {
-          els.tableBody.addEventListener("click", handleTableClick);
-        }
-
-        if (els.closeModalButton) {
-          els.closeModalButton.addEventListener("click", closeEditModal);
-        }
-
-        if (els.cancelEditButton) {
-          els.cancelEditButton.addEventListener("click", closeEditModal);
-        }
-
-        if (els.editModal) {
-          els.editModal.addEventListener("click", function (event) {
-            if (event.target === els.editModal) {
-              closeEditModal();
-            }
-          });
-        }
-
-        if (els.editForm) {
-          els.editForm.addEventListener("submit", saveStudent);
-        }
-
-        if (els.menuToggle) {
-          els.menuToggle.addEventListener("click", toggleSidebar);
-        }
-
-        if (els.sidebarOverlay) {
-          els.sidebarOverlay.addEventListener("click", closeSidebar);
-        }
-
-        document.addEventListener("keydown", function (event) {
-          if (event.key === "Escape") {
+      if (els.editModal) {
+        els.editModal.addEventListener("click", function (event) {
+          if (event.target === els.editModal) {
             closeEditModal();
-            closeSidebar();
           }
-        });
-
-        document.addEventListener("click", function (event) {
-          const link = event.target.closest("a[href='#']");
-
-          if (!link) {
-            return;
-          }
-
-          event.preventDefault();
-          window.alert("This module page is not connected yet.");
         });
       }
 
-      function boot() {
-        applyTheme(getPreferredTheme());
-        bindEvents();
+      if (els.editForm) {
+        els.editForm.addEventListener("submit", saveStudent);
+      }
 
-        if (!hasSession()) {
-          redirectToLogin();
+      if (els.menuToggle) {
+        els.menuToggle.addEventListener("click", toggleSidebar);
+      }
+
+      if (els.sidebarOverlay) {
+        els.sidebarOverlay.addEventListener("click", closeSidebar);
+      }
+
+      document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") {
+          closeEditModal();
+          closeSidebar();
+        }
+      });
+
+      document.addEventListener("click", function (event) {
+        const link = event.target.closest("a[href='#']");
+
+        if (!link) {
           return;
         }
 
-        renderAdminIdentity();
-        loadStudents();
+        event.preventDefault();
+        window.alert("This module page is not connected yet.");
+      });
+    }
+
+    function boot() {
+      applyTheme(getPreferredTheme());
+      bindEvents();
+
+      if (!hasSession()) {
+        redirectToLogin();
+        return;
       }
 
-      boot();
-    })();
+      renderAdminIdentity();
+      loadStudents();
+    }
+
+    boot();
+  })();
+
   </script>
 </body>
 </html>
