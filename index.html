@@ -4,48 +4,91 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>AcademeForge Admin Login</title>
+  <title>AcademeForge Admin Panel</title>
 
   <style>
     :root {
-      --font-main: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      --radius-sm: 14px;
-      --radius-md: 18px;
-      --radius-lg: 26px;
-      --transition-fast: 160ms ease;
-      --transition-normal: 240ms ease;
+      --af-sidebar-width: 292px;
+      --af-topbar-height: 76px;
+
+      --af-radius-sm: 12px;
+      --af-radius-md: 16px;
+      --af-radius-lg: 22px;
+      --af-radius-xl: 30px;
+
+      --af-success: #16a34a;
+      --af-warning: #f59e0b;
+      --af-danger: #ef4444;
+      --af-info: #38bdf8;
+
+      --af-transition-fast: 160ms ease;
+      --af-transition-normal: 240ms ease;
+
+      --af-font-main: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
     html[data-theme="dark"] {
-      --bg-main: #070a12;
-      --bg-card: rgba(17, 24, 39, 0.86);
-      --bg-input: rgba(15, 23, 42, 0.92);
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --text-soft: #cbd5e1;
-      --border-soft: rgba(148, 163, 184, 0.18);
-      --border-strong: rgba(148, 163, 184, 0.32);
-      --primary: #14b8a6;
-      --primary-strong: #2dd4bf;
-      --danger: #ef4444;
-      --success: #18b981;
-      --gradient-main: linear-gradient(135deg, #14b8a6 0%, #6366f1 52%, #8b5cf6 100%);
+      --af-bg-main: #070a12;
+      --af-bg-soft: #0b1120;
+      --af-bg-panel: rgba(15, 23, 42, 0.82);
+      --af-bg-card: rgba(15, 23, 42, 0.88);
+      --af-bg-card-solid: #111827;
+      --af-bg-hover: rgba(255, 255, 255, 0.06);
+      --af-bg-active: rgba(20, 184, 166, 0.16);
+
+      --af-text-main: #f8fafc;
+      --af-text-soft: #cbd5e1;
+      --af-text-muted: #94a3b8;
+      --af-text-faint: #64748b;
+
+      --af-border-soft: rgba(148, 163, 184, 0.16);
+      --af-border-medium: rgba(148, 163, 184, 0.28);
+      --af-border-strong: rgba(148, 163, 184, 0.42);
+
+      --af-primary: #14b8a6;
+      --af-primary-strong: #2dd4bf;
+      --af-primary-soft: rgba(20, 184, 166, 0.14);
+
+      --af-purple: #8b5cf6;
+      --af-blue: #6366f1;
+
+      --af-gradient-main: linear-gradient(135deg, #14b8a6 0%, #6366f1 52%, #8b5cf6 100%);
+      --af-gradient-soft: linear-gradient(135deg, rgba(20, 184, 166, 0.18), rgba(99, 102, 241, 0.12), rgba(139, 92, 246, 0.10));
+
+      --af-shadow-card: 0 24px 70px rgba(0, 0, 0, 0.34);
+      --af-input-bg: rgba(15, 23, 42, 0.92);
     }
 
     html[data-theme="light"] {
-      --bg-main: #f5f7fb;
-      --bg-card: rgba(255, 255, 255, 0.92);
-      --bg-input: rgba(255, 255, 255, 0.96);
-      --text-main: #0f172a;
-      --text-muted: #64748b;
-      --text-soft: #334155;
-      --border-soft: rgba(15, 23, 42, 0.12);
-      --border-strong: rgba(15, 23, 42, 0.2);
-      --primary: #0d9488;
-      --primary-strong: #0f766e;
-      --danger: #dc2626;
-      --success: #059669;
-      --gradient-main: linear-gradient(135deg, #0d9488 0%, #4f46e5 52%, #7c3aed 100%);
+      --af-bg-main: #f5f7fb;
+      --af-bg-soft: #eef2f7;
+      --af-bg-panel: rgba(255, 255, 255, 0.82);
+      --af-bg-card: rgba(255, 255, 255, 0.92);
+      --af-bg-card-solid: #ffffff;
+      --af-bg-hover: rgba(15, 23, 42, 0.055);
+      --af-bg-active: rgba(13, 148, 136, 0.12);
+
+      --af-text-main: #0f172a;
+      --af-text-soft: #334155;
+      --af-text-muted: #64748b;
+      --af-text-faint: #94a3b8;
+
+      --af-border-soft: rgba(15, 23, 42, 0.11);
+      --af-border-medium: rgba(15, 23, 42, 0.18);
+      --af-border-strong: rgba(15, 23, 42, 0.28);
+
+      --af-primary: #0d9488;
+      --af-primary-strong: #0f766e;
+      --af-primary-soft: rgba(13, 148, 136, 0.12);
+
+      --af-purple: #7c3aed;
+      --af-blue: #4f46e5;
+
+      --af-gradient-main: linear-gradient(135deg, #0d9488 0%, #4f46e5 52%, #7c3aed 100%);
+      --af-gradient-soft: linear-gradient(135deg, rgba(13, 148, 136, 0.14), rgba(79, 70, 229, 0.10), rgba(124, 58, 237, 0.08));
+
+      --af-shadow-card: 0 24px 70px rgba(15, 23, 42, 0.12);
+      --af-input-bg: rgba(255, 255, 255, 0.94);
     }
 
     * {
@@ -54,17 +97,26 @@
       padding: 0;
     }
 
+    html {
+      min-height: 100%;
+      scroll-behavior: smooth;
+    }
+
     body {
       min-height: 100vh;
-      font-family: var(--font-main);
+      font-family: var(--af-font-main);
       background:
-        radial-gradient(circle at top left, rgba(20, 184, 166, 0.18), transparent 34%),
-        radial-gradient(circle at top right, rgba(99, 102, 241, 0.16), transparent 34%),
-        var(--bg-main);
-      color: var(--text-main);
-      display: grid;
-      place-items: center;
-      padding: 22px;
+        radial-gradient(circle at top left, rgba(20, 184, 166, 0.16), transparent 34%),
+        radial-gradient(circle at top right, rgba(99, 102, 241, 0.14), transparent 34%),
+        radial-gradient(circle at bottom right, rgba(139, 92, 246, 0.10), transparent 34%),
+        var(--af-bg-main);
+      color: var(--af-text-main);
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
     }
 
     button,
@@ -77,789 +129,2466 @@
       cursor: pointer;
     }
 
-    .login-shell {
-      width: min(100%, 1120px);
-      display: grid;
-      grid-template-columns: minmax(0, 1.05fr) minmax(380px, 0.95fr);
-      gap: 22px;
-      align-items: stretch;
+    input {
+      border: 0;
+      outline: 0;
     }
 
-    .brand-panel,
-    .login-card {
-      border: 1px solid var(--border-soft);
-      background: var(--bg-card);
-      border-radius: 32px;
-      backdrop-filter: blur(24px);
-      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.22);
-      overflow: hidden;
+    ::selection {
+      background: rgba(20, 184, 166, 0.32);
     }
 
-    .brand-panel {
-      position: relative;
-      padding: 34px;
-      min-height: 620px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
+    .af-hidden {
+      display: none !important;
     }
 
-    .brand-panel::before {
-      content: "";
-      position: absolute;
-      width: 360px;
-      height: 360px;
-      border-radius: 50%;
-      right: -120px;
-      bottom: -130px;
-      background: rgba(20, 184, 166, 0.22);
-      filter: blur(36px);
-      pointer-events: none;
-    }
-
-    .brand-logo-row {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .brand-logo {
-      width: 54px;
-      height: 54px;
-      border-radius: 18px;
+    .af-page-loader {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
       display: grid;
       place-items: center;
-      background: var(--gradient-main);
-      color: white;
+      background: var(--af-bg-main);
+      color: var(--af-text-main);
+    }
+
+    .af-loader-card {
+      width: min(420px, calc(100vw - 32px));
+      padding: 26px;
+      border: 1px solid var(--af-border-soft);
+      border-radius: var(--af-radius-xl);
+      background: var(--af-bg-card);
+      box-shadow: var(--af-shadow-card);
+      text-align: center;
+    }
+
+    .af-loader-mark {
+      width: 58px;
+      height: 58px;
+      margin: 0 auto 16px;
+      border-radius: 18px;
+      background: var(--af-gradient-main);
+      display: grid;
+      place-items: center;
+      color: #ffffff;
+      font-size: 22px;
       font-weight: 1000;
       letter-spacing: -0.04em;
     }
 
-    .brand-title {
+    .af-loader-title {
+      font-size: 18px;
+      font-weight: 950;
+      letter-spacing: -0.03em;
+    }
+
+    .af-loader-text {
+      margin-top: 8px;
+      color: var(--af-text-muted);
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.6;
+    }
+
+    .af-auth-screen {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(420px, 0.9fr);
+    }
+
+    .af-auth-visual {
+      position: relative;
+      overflow: hidden;
+      padding: 48px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background:
+        linear-gradient(135deg, rgba(20, 184, 166, 0.18), rgba(99, 102, 241, 0.12), rgba(139, 92, 246, 0.10)),
+        var(--af-bg-main);
+      border-right: 1px solid var(--af-border-soft);
+    }
+
+    .af-auth-visual::before {
+      content: "";
+      position: absolute;
+      width: 560px;
+      height: 560px;
+      left: -160px;
+      top: -160px;
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(20, 184, 166, 0.32), transparent 62%);
+      pointer-events: none;
+    }
+
+    .af-auth-visual::after {
+      content: "";
+      position: absolute;
+      width: 520px;
+      height: 520px;
+      right: -180px;
+      bottom: -180px;
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(139, 92, 246, 0.24), transparent 62%);
+      pointer-events: none;
+    }
+
+    .af-auth-brand {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .af-brand-logo {
+      width: 52px;
+      height: 52px;
+      border-radius: 18px;
+      background: var(--af-gradient-main);
+      display: grid;
+      place-items: center;
+      color: #ffffff;
+      font-weight: 1000;
+      letter-spacing: -0.04em;
+      box-shadow: 0 18px 50px rgba(20, 184, 166, 0.28);
+    }
+
+    .af-brand-name {
       font-size: 18px;
       font-weight: 1000;
       letter-spacing: -0.035em;
     }
 
-    .brand-subtitle {
+    .af-brand-subtitle {
       margin-top: 3px;
-      color: var(--text-muted);
+      color: var(--af-text-muted);
       font-size: 13px;
-      font-weight: 750;
+      font-weight: 760;
     }
 
-    .hero-copy {
+    .af-auth-hero {
       position: relative;
-      z-index: 1;
-      max-width: 720px;
+      z-index: 2;
+      max-width: 780px;
+      padding: 60px 0;
     }
 
-    .security-badge {
+    .af-auth-kicker {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      min-height: 32px;
-      padding: 0 12px;
+      min-height: 34px;
+      padding: 0 13px;
       border-radius: 999px;
-      background: rgba(20, 184, 166, 0.12);
-      color: var(--primary-strong);
-      border: 1px solid var(--border-soft);
+      background: var(--af-bg-card);
+      border: 1px solid var(--af-border-soft);
+      color: var(--af-primary-strong);
       font-size: 12px;
       font-weight: 950;
-      margin-bottom: 18px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
     }
 
-    .hero-title {
-      font-size: clamp(38px, 5vw, 72px);
+    .af-auth-title {
+      margin-top: 22px;
+      font-size: clamp(42px, 5.2vw, 82px);
       line-height: 0.94;
-      letter-spacing: -0.075em;
       font-weight: 1000;
+      letter-spacing: -0.075em;
     }
 
-    .gradient-text {
-      background: var(--gradient-main);
+    .af-gradient-text {
+      background: var(--af-gradient-main);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
     }
 
-    .hero-desc {
-      margin-top: 20px;
-      color: var(--text-muted);
-      font-size: 16px;
+    .af-auth-description {
+      max-width: 650px;
+      margin-top: 22px;
+      color: var(--af-text-muted);
+      font-size: 17px;
       line-height: 1.75;
-      font-weight: 650;
-      max-width: 680px;
+      font-weight: 680;
     }
 
-    .security-list {
+    .af-auth-stats {
       position: relative;
-      z-index: 1;
+      z-index: 2;
       display: grid;
-      gap: 12px;
-      margin-top: 30px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
     }
 
-    .security-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 14px;
-      border-radius: 18px;
-      background: rgba(255, 255, 255, 0.045);
-      border: 1px solid var(--border-soft);
-      color: var(--text-soft);
-      font-size: 13px;
-      font-weight: 800;
+    .af-auth-stat-card {
+      padding: 18px;
+      border-radius: var(--af-radius-lg);
+      background: var(--af-bg-card);
+      border: 1px solid var(--af-border-soft);
+      backdrop-filter: blur(22px);
     }
 
-    .login-card {
-      padding: 34px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
+    .af-auth-stat-value {
+      font-size: 24px;
+      font-weight: 1000;
+      letter-spacing: -0.04em;
     }
 
-    .login-top {
+    .af-auth-stat-label {
+      margin-top: 6px;
+      color: var(--af-text-muted);
+      font-size: 12px;
+      font-weight: 850;
+      line-height: 1.45;
+    }
+
+    .af-auth-panel-wrap {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 28px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent),
+        var(--af-bg-main);
+    }
+
+    .af-auth-panel {
+      width: min(100%, 480px);
+      padding: 28px;
+      border-radius: var(--af-radius-xl);
+      background: var(--af-bg-card);
+      border: 1px solid var(--af-border-soft);
+      box-shadow: var(--af-shadow-card);
+      backdrop-filter: blur(24px);
+    }
+
+    .af-auth-panel-top {
       display: flex;
+      align-items: flex-start;
       justify-content: space-between;
       gap: 16px;
-      align-items: flex-start;
-      margin-bottom: 28px;
+      margin-bottom: 24px;
     }
 
-    .login-kicker {
-      color: var(--primary-strong);
-      font-size: 12px;
-      font-weight: 950;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-    }
-
-    .login-title {
-      margin-top: 8px;
-      font-size: 32px;
-      line-height: 1;
+    .af-auth-panel-title {
+      font-size: 26px;
       font-weight: 1000;
       letter-spacing: -0.05em;
     }
 
-    .login-desc {
-      margin-top: 10px;
-      color: var(--text-muted);
+    .af-auth-panel-text {
+      margin-top: 7px;
+      color: var(--af-text-muted);
       font-size: 14px;
-      line-height: 1.65;
-      font-weight: 650;
+      line-height: 1.6;
+      font-weight: 680;
     }
 
-    .theme-btn {
-      width: 44px;
-      height: 44px;
-      border-radius: 14px;
+    .af-theme-button {
+      width: 46px;
+      height: 46px;
+      border-radius: 15px;
       display: grid;
       place-items: center;
-      border: 1px solid var(--border-soft);
-      background: transparent;
-      color: var(--text-main);
+      background: var(--af-bg-hover);
+      border: 1px solid var(--af-border-soft);
+      color: var(--af-text-main);
+      font-size: 17px;
       flex: 0 0 auto;
     }
 
-    .form {
+    .af-form {
       display: grid;
       gap: 16px;
     }
 
-    .field {
+    .af-field {
       display: grid;
       gap: 8px;
     }
 
-    .field label {
-      color: var(--text-soft);
+    .af-label {
+      color: var(--af-text-soft);
       font-size: 13px;
       font-weight: 900;
     }
 
-    .input-wrap {
+    .af-input-wrap {
       position: relative;
     }
 
-    .input-wrap input {
+    .af-input {
       width: 100%;
-      height: 52px;
-      border-radius: 16px;
-      border: 1px solid var(--border-soft);
-      background: var(--bg-input);
-      color: var(--text-main);
-      outline: none;
+      height: 54px;
+      border-radius: 17px;
       padding: 0 48px 0 16px;
-      font-weight: 750;
-      transition: border var(--transition-fast), box-shadow var(--transition-fast);
+      background: var(--af-input-bg);
+      color: var(--af-text-main);
+      border: 1px solid var(--af-border-soft);
+      font-size: 15px;
+      font-weight: 760;
+      transition: border var(--af-transition-fast), box-shadow var(--af-transition-fast), background var(--af-transition-fast);
     }
 
-    .input-wrap input:focus {
-      border-color: var(--primary);
+    .af-input:focus {
+      border-color: rgba(20, 184, 166, 0.64);
       box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.12);
     }
 
-    .input-icon {
+    .af-input-icon {
       position: absolute;
-      right: 16px;
+      right: 15px;
       top: 50%;
       transform: translateY(-50%);
-      color: var(--text-muted);
+      color: var(--af-text-muted);
+      font-size: 16px;
+      pointer-events: none;
     }
 
-    .submit-btn {
-      height: 52px;
+    .af-password-toggle {
+      position: absolute;
+      right: 9px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 38px;
+      height: 38px;
+      border-radius: 13px;
+      background: transparent;
+      color: var(--af-text-muted);
+      display: grid;
+      place-items: center;
+      font-size: 16px;
+    }
+
+    .af-password-toggle:hover {
+      background: var(--af-bg-hover);
+      color: var(--af-text-main);
+    }
+
+    .af-form-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-top: 2px;
+    }
+
+    .af-checkline {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--af-text-muted);
+      font-size: 13px;
+      font-weight: 760;
+      user-select: none;
+    }
+
+    .af-checkline input {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--af-primary);
+    }
+
+    .af-secure-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      min-height: 30px;
+      padding: 0 10px;
       border-radius: 999px;
-      background: var(--gradient-main);
-      color: white;
+      color: var(--af-primary-strong);
+      background: var(--af-primary-soft);
+      border: 1px solid rgba(20, 184, 166, 0.22);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .af-login-button {
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      min-height: 56px;
+      border-radius: 18px;
+      margin-top: 4px;
+      background: var(--af-gradient-main);
+      color: #ffffff;
       font-size: 15px;
       font-weight: 1000;
-      box-shadow: 0 18px 40px rgba(20, 184, 166, 0.22);
-      transition: transform var(--transition-fast), filter var(--transition-fast);
+      letter-spacing: -0.01em;
+      box-shadow: 0 20px 50px rgba(20, 184, 166, 0.22);
+      transition: transform var(--af-transition-fast), filter var(--af-transition-fast), opacity var(--af-transition-fast);
     }
 
-    .submit-btn:hover {
+    .af-login-button:hover {
       transform: translateY(-1px);
-      filter: brightness(1.05);
+      filter: brightness(1.04);
     }
 
-    .submit-btn:disabled {
+    .af-login-button:disabled {
       cursor: not-allowed;
-      opacity: 0.68;
+      opacity: 0.72;
       transform: none;
-      filter: none;
     }
 
-    .message {
-      min-height: 46px;
+    .af-auth-message {
       display: none;
-      align-items: center;
-      padding: 12px 14px;
       border-radius: 16px;
+      padding: 13px 14px;
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.5;
+      border: 1px solid transparent;
+    }
+
+    .af-auth-message.af-show {
+      display: block;
+    }
+
+    .af-auth-message.af-error {
+      color: #fecaca;
+      background: rgba(239, 68, 68, 0.14);
+      border-color: rgba(239, 68, 68, 0.24);
+    }
+
+    html[data-theme="light"] .af-auth-message.af-error {
+      color: #991b1b;
+      background: rgba(239, 68, 68, 0.10);
+    }
+
+    .af-auth-message.af-success {
+      color: #bbf7d0;
+      background: rgba(22, 163, 74, 0.14);
+      border-color: rgba(22, 163, 74, 0.24);
+    }
+
+    html[data-theme="light"] .af-auth-message.af-success {
+      color: #166534;
+      background: rgba(22, 163, 74, 0.10);
+    }
+
+    .af-auth-footer-note {
+      margin-top: 20px;
+      color: var(--af-text-faint);
+      font-size: 12px;
+      line-height: 1.65;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .af-dashboard-shell {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: var(--af-sidebar-width) minmax(0, 1fr);
+    }
+
+    .af-sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: var(--af-bg-panel);
+      border-right: 1px solid var(--af-border-soft);
+      backdrop-filter: blur(24px);
+      z-index: 60;
+    }
+
+    .af-sidebar-brand {
+      height: var(--af-topbar-height);
+      padding: 0 22px;
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      border-bottom: 1px solid var(--af-border-soft);
+    }
+
+    .af-sidebar-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 18px 14px 22px;
+    }
+
+    .af-nav-group {
+      margin-bottom: 24px;
+    }
+
+    .af-nav-label {
+      padding: 0 10px 9px;
+      color: var(--af-text-muted);
+      font-size: 11px;
+      font-weight: 1000;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .af-nav-list {
+      display: grid;
+      gap: 6px;
+    }
+
+    .af-nav-link {
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      color: var(--af-text-soft);
+      font-size: 14px;
+      font-weight: 780;
+      transition: background var(--af-transition-fast), color var(--af-transition-fast), transform var(--af-transition-fast);
+    }
+
+    .af-nav-link:hover {
+      background: var(--af-bg-hover);
+      color: var(--af-text-main);
+      transform: translateX(2px);
+    }
+
+    .af-nav-link.af-active {
+      background: var(--af-bg-active);
+      color: var(--af-primary-strong);
+    }
+
+    .af-nav-icon {
+      width: 22px;
+      text-align: center;
+      flex: 0 0 auto;
+    }
+
+    .af-sidebar-footer {
+      padding: 14px;
+      border-top: 1px solid var(--af-border-soft);
+    }
+
+    .af-admin-mini-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      border-radius: 18px;
+      background: var(--af-bg-card);
+      border: 1px solid var(--af-border-soft);
+    }
+
+    .af-admin-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--af-gradient-main);
+      display: grid;
+      place-items: center;
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 1000;
+      flex: 0 0 auto;
+    }
+
+    .af-admin-mini-name {
+      max-width: 178px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 13px;
+      font-weight: 950;
+    }
+
+    .af-admin-mini-role {
+      margin-top: 2px;
+      color: var(--af-text-muted);
+      font-size: 12px;
+      font-weight: 760;
+      text-transform: capitalize;
+    }
+
+    .af-main {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .af-topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      height: var(--af-topbar-height);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 0 28px;
+      background: var(--af-bg-panel);
+      border-bottom: 1px solid var(--af-border-soft);
+      backdrop-filter: blur(24px);
+    }
+
+    .af-topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .af-menu-toggle {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      display: none;
+      place-items: center;
+      background: var(--af-bg-card);
+      border: 1px solid var(--af-border-soft);
+      color: var(--af-text-main);
+      font-size: 18px;
+    }
+
+    .af-page-kicker {
+      color: var(--af-text-muted);
+      font-size: 12px;
+      font-weight: 1000;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .af-page-title {
+      margin-top: 3px;
+      font-size: 20px;
+      font-weight: 1000;
+      letter-spacing: -0.04em;
+    }
+
+    .af-topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 0 0 auto;
+    }
+
+    .af-search-box {
+      position: relative;
+      width: min(360px, 34vw);
+    }
+
+    .af-search-box input {
+      width: 100%;
+      height: 44px;
+      border-radius: 999px;
+      padding: 0 16px 0 42px;
+      background: var(--af-input-bg);
+      border: 1px solid var(--af-border-soft);
+      color: var(--af-text-main);
+      font-size: 14px;
+      font-weight: 760;
+    }
+
+    .af-search-box span {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--af-text-muted);
+      font-size: 15px;
+      pointer-events: none;
+    }
+
+    .af-icon-button,
+    .af-logout-button {
+      min-width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 14px;
+      background: var(--af-bg-card);
+      border: 1px solid var(--af-border-soft);
+      color: var(--af-text-main);
+      font-size: 14px;
+      font-weight: 950;
+    }
+
+    .af-logout-button {
+      color: var(--af-danger);
+    }
+
+    .af-content {
+      width: 100%;
+      max-width: 1680px;
+      margin: 0 auto;
+      padding: 28px;
+    }
+
+    .af-hero {
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--af-radius-xl);
+      padding: 30px;
+      background: var(--af-gradient-soft), var(--af-bg-card);
+      border: 1px solid var(--af-border-soft);
+      box-shadow: var(--af-shadow-card);
+    }
+
+    .af-hero::after {
+      content: "";
+      position: absolute;
+      width: 360px;
+      height: 360px;
+      right: -120px;
+      top: -120px;
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(20, 184, 166, 0.18), transparent 64%);
+      pointer-events: none;
+    }
+
+    .af-badge-row {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .af-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 31px;
+      padding: 0 12px;
+      border-radius: 999px;
+      background: var(--af-bg-card);
+      border: 1px solid var(--af-border-soft);
+      color: var(--af-text-soft);
+      font-size: 12px;
+      font-weight: 950;
+    }
+
+    .af-badge-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--af-success);
+      box-shadow: 0 0 0 5px rgba(22, 163, 74, 0.14);
+    }
+
+    .af-hero-title {
+      position: relative;
+      z-index: 2;
+      max-width: 960px;
+      font-size: clamp(34px, 4.4vw, 64px);
+      line-height: 0.98;
+      font-weight: 1000;
+      letter-spacing: -0.07em;
+    }
+
+    .af-hero-description {
+      position: relative;
+      z-index: 2;
+      max-width: 800px;
+      margin-top: 18px;
+      color: var(--af-text-muted);
+      font-size: 16px;
+      line-height: 1.75;
+      font-weight: 680;
+    }
+
+    .af-quick-stats {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 24px;
+    }
+
+    .af-stat-card {
+      padding: 17px;
+      border-radius: var(--af-radius-lg);
+      background: var(--af-bg-card);
+      border: 1px solid var(--af-border-soft);
+    }
+
+    .af-stat-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .af-stat-label {
+      color: var(--af-text-muted);
+      font-size: 12px;
+      font-weight: 950;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .af-stat-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: var(--af-primary-soft);
+      color: var(--af-primary-strong);
+    }
+
+    .af-stat-value {
+      margin-top: 14px;
+      font-size: 26px;
+      font-weight: 1000;
+      letter-spacing: -0.05em;
+    }
+
+    .af-stat-note {
+      margin-top: 5px;
+      color: var(--af-text-muted);
+      font-size: 12px;
+      font-weight: 760;
+    }
+
+    .af-section {
+      margin-top: 28px;
+    }
+
+    .af-section-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 16px;
+    }
+
+    .af-section-kicker {
+      color: var(--af-primary-strong);
+      font-size: 12px;
+      font-weight: 1000;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .af-section-title {
+      margin-top: 5px;
+      font-size: 24px;
+      font-weight: 1000;
+      letter-spacing: -0.045em;
+    }
+
+    .af-section-description {
+      margin-top: 7px;
+      max-width: 840px;
+      color: var(--af-text-muted);
+      font-size: 14px;
+      line-height: 1.65;
+      font-weight: 680;
+    }
+
+    .af-view-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 0 0 auto;
+    }
+
+    .af-filter-select {
+      height: 42px;
+      border-radius: 14px;
+      padding: 0 13px;
+      background: var(--af-bg-card);
+      color: var(--af-text-main);
+      border: 1px solid var(--af-border-soft);
       font-size: 13px;
       font-weight: 850;
-      line-height: 1.45;
-      border: 1px solid var(--border-soft);
+      outline: 0;
     }
 
-    .message.show {
+    .af-action-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .af-action-card {
+      position: relative;
+      overflow: hidden;
+      min-height: 178px;
       display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border-radius: var(--af-radius-lg);
+      padding: 18px;
+      background: var(--af-bg-card);
+      border: 1px solid var(--af-border-soft);
+      transition: transform var(--af-transition-normal), border var(--af-transition-normal), background var(--af-transition-normal), box-shadow var(--af-transition-normal);
     }
 
-    .message.error {
-      color: var(--danger);
-      background: rgba(239, 68, 68, 0.1);
+    .af-action-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--af-border-strong);
+      background: var(--af-gradient-soft), var(--af-bg-card);
+      box-shadow: 0 20px 60px rgba(15, 23, 42, 0.16);
     }
 
-    .message.success {
-      color: var(--success);
-      background: rgba(24, 185, 129, 0.1);
+    .af-action-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      background: radial-gradient(circle at top right, rgba(20, 184, 166, 0.16), transparent 52%);
+      transition: opacity var(--af-transition-normal);
+      pointer-events: none;
     }
 
-    .secure-note {
+    .af-action-card:hover::before {
+      opacity: 1;
+    }
+
+    .af-action-main {
+      position: relative;
+      z-index: 2;
+    }
+
+    .af-action-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 17px;
+      display: grid;
+      place-items: center;
+      background: var(--af-primary-soft);
+      color: var(--af-primary-strong);
+      font-size: 23px;
+      margin-bottom: 14px;
+    }
+
+    .af-action-title {
+      font-size: 16px;
+      font-weight: 1000;
+      letter-spacing: -0.025em;
+    }
+
+    .af-action-desc {
+      margin-top: 8px;
+      color: var(--af-text-muted);
+      font-size: 13px;
+      line-height: 1.55;
+      font-weight: 680;
+    }
+
+    .af-action-bottom {
+      position: relative;
+      z-index: 2;
       margin-top: 18px;
-      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .af-action-meta {
+      color: var(--af-text-muted);
       font-size: 12px;
-      line-height: 1.6;
-      font-weight: 700;
+      font-weight: 900;
     }
 
-    .dashboard-mount {
-      width: 100%;
-      min-height: 100vh;
-      display: none;
+    .af-open-arrow {
+      width: 38px;
+      height: 38px;
+      border-radius: 13px;
+      display: grid;
+      place-items: center;
+      background: var(--af-bg-hover);
+      border: 1px solid var(--af-border-soft);
+      color: var(--af-text-main);
+      font-weight: 1000;
+      transition: transform var(--af-transition-fast);
     }
 
-    .dashboard-mount.active {
-      display: block;
+    .af-action-card:hover .af-open-arrow {
+      transform: translateX(2px);
     }
 
-    body.dashboard-loaded {
-      display: block;
-      padding: 0;
+    .af-settings-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 16px;
     }
 
-    body.dashboard-loaded .login-shell {
-      display: none;
+    .af-panel-card {
+      padding: 20px;
+      border-radius: var(--af-radius-lg);
+      background: var(--af-bg-card);
+      border: 1px solid var(--af-border-soft);
     }
 
-    body.dashboard-loaded .dashboard-mount {
-      display: block;
+    .af-panel-title {
+      font-size: 17px;
+      font-weight: 1000;
+      letter-spacing: -0.03em;
     }
 
-    @media (max-width: 920px) {
-      .login-shell {
+    .af-panel-text {
+      margin-top: 8px;
+      color: var(--af-text-muted);
+      font-size: 13px;
+      line-height: 1.65;
+      font-weight: 680;
+    }
+
+    .af-setting-list {
+      margin-top: 16px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .af-setting-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 13px;
+      border-radius: 16px;
+      background: var(--af-bg-hover);
+      border: 1px solid var(--af-border-soft);
+    }
+
+    .af-setting-name {
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .af-setting-value {
+      color: var(--af-text-muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .af-mini-button {
+      min-height: 36px;
+      border-radius: 12px;
+      padding: 0 12px;
+      background: var(--af-primary-soft);
+      color: var(--af-primary-strong);
+      border: 1px solid rgba(20, 184, 166, 0.22);
+      font-size: 12px;
+      font-weight: 950;
+    }
+
+    .af-footer {
+      margin-top: 28px;
+      padding: 22px;
+      border-radius: var(--af-radius-lg);
+      background: var(--af-bg-card);
+      border: 1px solid var(--af-border-soft);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      color: var(--af-text-muted);
+      font-size: 13px;
+      font-weight: 760;
+    }
+
+    .af-sidebar-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 55;
+      background: rgba(2, 6, 23, 0.62);
+      backdrop-filter: blur(4px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--af-transition-normal);
+    }
+
+    body.af-sidebar-open .af-sidebar-overlay {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    @media (max-width: 1320px) {
+      .af-action-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .af-quick-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 1080px) {
+      .af-auth-screen {
         grid-template-columns: 1fr;
       }
 
-      .brand-panel {
-        min-height: auto;
+      .af-auth-visual {
+        display: none;
+      }
+
+      .af-dashboard-shell {
+        grid-template-columns: 1fr;
+      }
+
+      .af-sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: min(var(--af-sidebar-width), 88vw);
+        transform: translateX(-105%);
+        box-shadow: 0 24px 80px rgba(0, 0, 0, 0.24);
+        transition: transform var(--af-transition-normal);
+      }
+
+      body.af-sidebar-open .af-sidebar {
+        transform: translateX(0);
+      }
+
+      .af-menu-toggle {
+        display: grid;
+      }
+
+      .af-search-box {
+        display: none;
       }
     }
 
-    @media (max-width: 560px) {
-      body {
-        padding: 14px;
+    @media (max-width: 820px) {
+      .af-topbar {
+        padding: 0 16px;
       }
 
-      .brand-panel,
-      .login-card {
-        border-radius: 24px;
-        padding: 24px;
+      .af-content {
+        padding: 18px 14px 24px;
       }
 
-      .hero-title {
-        font-size: 38px;
+      .af-action-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
-      .login-title {
-        font-size: 28px;
+      .af-settings-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .af-section-header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .af-footer {
+        align-items: flex-start;
+        flex-direction: column;
       }
     }
-    .dashboard-mount {
-  width: 100%;
-  min-height: 100vh;
-  display: none;
-}
 
-.dashboard-mount.active {
-  display: block;
-}
+    @media (max-width: 620px) {
+      .af-auth-panel-wrap {
+        padding: 18px 14px;
+      }
 
-body.dashboard-loaded {
-  display: block;
-  padding: 0;
-}
+      .af-auth-panel {
+        padding: 22px;
+      }
 
-body.dashboard-loaded .login-shell {
-  display: none;
-}
+      .af-auth-panel-top {
+        align-items: flex-start;
+      }
 
-body.dashboard-loaded .dashboard-mount {
-  display: block;
-}
+      .af-action-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .af-quick-stats {
+        grid-template-columns: 1fr;
+      }
+
+      .af-hero {
+        padding: 22px;
+      }
+
+      .af-hero-title {
+        font-size: 34px;
+      }
+
+      .af-page-title {
+        font-size: 17px;
+      }
+
+      .af-icon-button {
+        display: none;
+      }
+
+      .af-form-row {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
   </style>
 </head>
 
 <body>
-  <main class="login-shell">
-    <section class="brand-panel">
-      <div class="brand-logo-row">
-        <div class="brand-logo">AF</div>
+  <div id="afPageLoader" class="af-page-loader">
+    <div class="af-loader-card">
+      <div class="af-loader-mark">AF</div>
+      <div class="af-loader-title">Checking admin session</div>
+      <div class="af-loader-text">Please wait while the admin panel verifies local session state.</div>
+    </div>
+  </div>
+
+  <section id="afAuthScreen" class="af-auth-screen af-hidden">
+    <div class="af-auth-visual">
+      <div class="af-auth-brand">
+        <div class="af-brand-logo">AF</div>
         <div>
-          <div class="brand-title">AcademeForge</div>
-          <div class="brand-subtitle">Protected Admin Access</div>
+          <div class="af-brand-name">AcademeForge</div>
+          <div class="af-brand-subtitle">Admin Control Panel</div>
         </div>
       </div>
 
-      <div class="hero-copy">
-        <div class="security-badge">● Backend protected dashboard</div>
-        <h1 class="hero-title">
-          Admin panel is <span class="gradient-text">not stored</span> in public frontend code.
+      <div class="af-auth-hero">
+        <div class="af-auth-kicker">Secure Internal Access</div>
+        <h1 class="af-auth-title">
+          Manage your <span class="af-gradient-text">EdTech platform</span> from one command center.
         </h1>
-        <p class="hero-desc">
-          Login verifies your Admin ID and password through Supabase Edge Functions. The dashboard HTML loads only after a valid backend session check.
+        <p class="af-auth-description">
+          Centralized admin interface for students, courses, lectures, tests, access control, payments, notifications,
+          community moderation, reports, and operational settings.
         </p>
+      </div>
 
-        <div class="security-list">
-          <div class="security-item">🔐 No service role key in frontend</div>
-          <div class="security-item">🛡️ Dashboard code loads from backend only</div>
-          <div class="security-item">🚫 Login bypass cannot reveal panel content</div>
+      <div class="af-auth-stats">
+        <div class="af-auth-stat-card">
+          <div class="af-auth-stat-value">24+</div>
+          <div class="af-auth-stat-label">Management modules prepared</div>
+        </div>
+        <div class="af-auth-stat-card">
+          <div class="af-auth-stat-value">2</div>
+          <div class="af-auth-stat-label">Theme modes supported</div>
+        </div>
+        <div class="af-auth-stat-card">
+          <div class="af-auth-stat-value">API</div>
+          <div class="af-auth-stat-label">Data actions handled by backend</div>
         </div>
       </div>
-    </section>
+    </div>
 
-    <section class="login-card">
-      <div class="login-top">
+    <div class="af-auth-panel-wrap">
+      <div class="af-auth-panel">
+        <div class="af-auth-panel-top">
+          <div>
+            <h2 class="af-auth-panel-title">Admin Login</h2>
+            <p class="af-auth-panel-text">
+              Enter your admin ID and password to open the control panel.
+            </p>
+          </div>
+          <button id="afAuthThemeToggle" class="af-theme-button" type="button" aria-label="Toggle theme">🌙</button>
+        </div>
+
+        <form id="afLoginForm" class="af-form" autocomplete="off">
+          <div id="afAuthMessage" class="af-auth-message"></div>
+
+          <div class="af-field">
+            <label class="af-label" for="afAdminId">Admin ID</label>
+            <div class="af-input-wrap">
+              <input
+                id="afAdminId"
+                class="af-input"
+                type="text"
+                name="admin_id"
+                inputmode="text"
+                autocomplete="username"
+                placeholder="Enter admin ID"
+                required
+              />
+              <span class="af-input-icon">👤</span>
+            </div>
+          </div>
+
+          <div class="af-field">
+            <label class="af-label" for="afAdminPassword">Password</label>
+            <div class="af-input-wrap">
+              <input
+                id="afAdminPassword"
+                class="af-input"
+                type="password"
+                name="password"
+                autocomplete="current-password"
+                placeholder="Enter password"
+                required
+              />
+              <button id="afPasswordToggle" class="af-password-toggle" type="button" aria-label="Show password">🔒</button>
+            </div>
+          </div>
+
+          <div class="af-form-row">
+            <label class="af-checkline">
+              <input id="afRememberSession" type="checkbox" checked />
+              <span>Keep me signed in on this device</span>
+            </label>
+
+            <span class="af-secure-pill">● Protected API</span>
+          </div>
+
+          <button id="afLoginButton" class="af-login-button" type="submit">
+            Login & Open Dashboard
+          </button>
+        </form>
+
+        <p class="af-auth-footer-note">
+          Dashboard UI is frontend-only. Real data operations must be handled through protected backend APIs.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section id="afDashboardScreen" class="af-dashboard-shell af-hidden">
+    <div id="afSidebarOverlay" class="af-sidebar-overlay"></div>
+
+    <aside id="afSidebar" class="af-sidebar">
+      <div class="af-sidebar-brand">
+        <div class="af-brand-logo">AF</div>
         <div>
-          <div class="login-kicker">Admin Login</div>
-          <h2 class="login-title">Sign in securely</h2>
-          <p class="login-desc">
-            Enter your Admin ID and password to load the protected command center.
-          </p>
+          <div class="af-brand-name">AcademeForge</div>
+          <div class="af-brand-subtitle">Admin Dashboard</div>
         </div>
-
-        <button class="theme-btn" id="themeBtn" type="button" aria-label="Toggle theme">🌙</button>
       </div>
 
-      <form class="form" id="loginForm" autocomplete="off">
-        <div class="field">
-          <label for="adminId">Admin ID</label>
-          <div class="input-wrap">
-            <input id="adminId" name="admin_id" type="text" placeholder="Enter admin ID" autocomplete="username" required />
-            <span class="input-icon">👤</span>
+      <div class="af-sidebar-scroll">
+        <nav class="af-nav-group">
+          <div class="af-nav-label">Core</div>
+          <div class="af-nav-list">
+            <a href="#" class="af-nav-link af-active" data-nav-search="dashboard overview home">
+              <span class="af-nav-icon">🏠</span>
+              <span>Dashboard Overview</span>
+            </a>
+            <a href="#" class="af-nav-link" data-nav-search="students manager students_af users">
+              <span class="af-nav-icon">👥</span>
+              <span>Students Management</span>
+            </a>
+            <a href="#" class="af-nav-link" data-nav-search="courses student courses learning">
+              <span class="af-nav-icon">🎓</span>
+              <span>Courses & Learning</span>
+            </a>
+            <a href="#" class="af-nav-link" data-nav-search="lectures chapters videos">
+              <span class="af-nav-icon">📚</span>
+              <span>Lectures & Chapters</span>
+            </a>
+            <a href="#" class="af-nav-link" data-nav-search="tests questions attempts answers">
+              <span class="af-nav-icon">🧪</span>
+              <span>Tests & Questions</span>
+            </a>
+          </div>
+        </nav>
+
+        <nav class="af-nav-group">
+          <div class="af-nav-label">Operations</div>
+          <div class="af-nav-list">
+            <a href="#" class="af-nav-link" data-nav-search="batch access full access">
+              <span class="af-nav-icon">🔐</span>
+              <span>Access Control</span>
+            </a>
+            <a href="#" class="af-nav-link" data-nav-search="payments batch payments">
+              <span class="af-nav-icon">💳</span>
+              <span>Payments</span>
+            </a>
+            <a href="#" class="af-nav-link" data-nav-search="apk downloads app version">
+              <span class="af-nav-icon">📲</span>
+              <span>APK Downloads</span>
+            </a>
+            <a href="#" class="af-nav-link" data-nav-search="notifications app notifications">
+              <span class="af-nav-icon">🔔</span>
+              <span>Notifications</span>
+            </a>
+            <a href="#" class="af-nav-link" data-nav-search="translations language">
+              <span class="af-nav-icon">🌐</span>
+              <span>Translations</span>
+            </a>
+          </div>
+        </nav>
+
+        <nav class="af-nav-group">
+          <div class="af-nav-label">Community</div>
+          <div class="af-nav-list">
+            <a href="#" class="af-nav-link" data-nav-search="nexus posts community">
+              <span class="af-nav-icon">📰</span>
+              <span>Nexus Posts</span>
+            </a>
+            <a href="#" class="af-nav-link" data-nav-search="comments nexus comments">
+              <span class="af-nav-icon">💬</span>
+              <span>Nexus Comments</span>
+            </a>
+            <a href="#" class="af-nav-link" data-nav-search="likes reactions">
+              <span class="af-nav-icon">❤️</span>
+              <span>Post Likes</span>
+            </a>
+            <a href="#" class="af-nav-link" data-nav-search="join team applications">
+              <span class="af-nav-icon">🧑‍💼</span>
+              <span>Join Team Applications</span>
+            </a>
+            <a href="#" class="af-nav-link" data-nav-search="bug reports issues">
+              <span class="af-nav-icon">🐞</span>
+              <span>Bug Reports</span>
+            </a>
+          </div>
+        </nav>
+
+        <nav class="af-nav-group">
+          <div class="af-nav-label">System</div>
+          <div class="af-nav-list">
+            <a href="#" class="af-nav-link" data-nav-search="deleted accounts">
+              <span class="af-nav-icon">🗑️</span>
+              <span>Deleted Accounts</span>
+            </a>
+            <a href="#" class="af-nav-link" data-nav-search="delete requests">
+              <span class="af-nav-icon">🧾</span>
+              <span>Delete Requests</span>
+            </a>
+            <a href="#" class="af-nav-link" data-nav-search="settings admin preferences">
+              <span class="af-nav-icon">⚙️</span>
+              <span>Admin Settings</span>
+            </a>
+          </div>
+        </nav>
+      </div>
+
+      <div class="af-sidebar-footer">
+        <div class="af-admin-mini-card">
+          <div class="af-admin-avatar" id="afAdminAvatar">AF</div>
+          <div>
+            <div class="af-admin-mini-name" id="afAdminMiniName">Admin</div>
+            <div class="af-admin-mini-role" id="afAdminMiniRole">Active Session</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="af-main">
+      <header class="af-topbar">
+        <div class="af-topbar-left">
+          <button id="afMenuToggle" class="af-menu-toggle" type="button" aria-label="Open navigation">☰</button>
+          <div>
+            <div class="af-page-kicker">Protected Admin UI</div>
+            <h1 class="af-page-title">AcademeForge Control Panel</h1>
           </div>
         </div>
 
-        <div class="field">
-          <label for="password">Password</label>
-          <div class="input-wrap">
-            <input id="password" name="password" type="password" placeholder="Enter password" autocomplete="current-password" required />
-            <span class="input-icon">🔒</span>
-          </div>
+        <div class="af-topbar-actions">
+          <label class="af-search-box">
+            <span>⌕</span>
+            <input id="afDashboardSearch" type="search" placeholder="Search modules..." autocomplete="off" />
+          </label>
+
+          <button id="afDashboardThemeToggle" class="af-icon-button" type="button" aria-label="Toggle theme">🌙</button>
+          <button id="afLogoutButton" class="af-logout-button" type="button">Logout</button>
         </div>
+      </header>
 
-        <button class="submit-btn" id="submitBtn" type="submit">Login & Load Dashboard</button>
+      <section class="af-content">
+        <section class="af-hero">
+          <div class="af-badge-row">
+            <span class="af-badge"><span class="af-badge-dot"></span> Logged in</span>
+            <span class="af-badge">Frontend dashboard</span>
+            <span class="af-badge">Backend data actions</span>
+            <span class="af-badge">Light / dark mode</span>
+          </div>
 
-        <div class="message" id="messageBox"></div>
-      </form>
+          <h2 class="af-hero-title">
+            Professional <span class="af-gradient-text">EdTech Admin</span> command center.
+          </h2>
 
-      <p class="secure-note">
-        This page contains only the login UI. The actual dashboard is fetched from the backend after session verification.
-      </p>
-    </section>
-  </main>
+          <p class="af-hero-description" id="afHeroDescription">
+            Manage AcademeForge modules from a clean, responsive dashboard. This page only controls navigation and UI;
+            real records should be fetched through protected backend APIs.
+          </p>
 
-  <section class="dashboard-mount" id="dashboardMount"></section>
+          <div class="af-quick-stats">
+            <div class="af-stat-card">
+              <div class="af-stat-top">
+                <div class="af-stat-label">Modules</div>
+                <div class="af-stat-icon">▦</div>
+              </div>
+              <div class="af-stat-value">24</div>
+              <div class="af-stat-note">Prepared action sections</div>
+            </div>
 
- <script>
-  (function () {
-    "use strict";
+            <div class="af-stat-card">
+              <div class="af-stat-top">
+                <div class="af-stat-label">Mode</div>
+                <div class="af-stat-icon">◐</div>
+              </div>
+              <div class="af-stat-value">2</div>
+              <div class="af-stat-note">Light and dark interface</div>
+            </div>
 
-    const AUTH_ENDPOINT = "https://afooyyydhlwngzssgqih.supabase.co/functions/v1/admin-auth";
-    const DASHBOARD_ENDPOINT = "https://afooyyydhlwngzssgqih.supabase.co/functions/v1/admin-dashboard";
+            <div class="af-stat-card">
+              <div class="af-stat-top">
+                <div class="af-stat-label">Session</div>
+                <div class="af-stat-icon">✓</div>
+              </div>
+              <div class="af-stat-value">Active</div>
+              <div class="af-stat-note">Local token detected</div>
+            </div>
 
-    const root = document.documentElement;
-    const body = document.body;
-    const themeBtn = document.getElementById("themeBtn");
-    const loginForm = document.getElementById("loginForm");
-    const adminIdInput = document.getElementById("adminId");
-    const passwordInput = document.getElementById("password");
-    const submitBtn = document.getElementById("submitBtn");
-    const messageBox = document.getElementById("messageBox");
-    const dashboardMount = document.getElementById("dashboardMount");
+            <div class="af-stat-card">
+              <div class="af-stat-top">
+                <div class="af-stat-label">Data</div>
+                <div class="af-stat-icon">↗</div>
+              </div>
+              <div class="af-stat-value">API</div>
+              <div class="af-stat-note">Protected backend required</div>
+            </div>
+          </div>
+        </section>
 
-    const THEME_KEY = "academeforge-admin-login-theme";
-    const TOKEN_KEY = "af_admin_session_token";
-    const DEVICE_KEY = "af_admin_device_id";
+        <section class="af-section">
+          <div class="af-section-header">
+            <div>
+              <div class="af-section-kicker">Admin Actions</div>
+              <h2 class="af-section-title">Management Modules</h2>
+              <p class="af-section-description">
+                Current links are kept as <strong>#</strong>. When a module page is ready, replace that module's href with its folder path.
+              </p>
+            </div>
 
-    function safeLocalStorageGet(key) {
-      try {
-        return localStorage.getItem(key);
-      } catch (error) {
-        return null;
+            <div class="af-view-controls">
+              <select id="afCategoryFilter" class="af-filter-select" aria-label="Filter modules">
+                <option value="all">All modules</option>
+                <option value="core">Core</option>
+                <option value="learning">Learning</option>
+                <option value="testing">Testing</option>
+                <option value="access">Access</option>
+                <option value="operations">Operations</option>
+                <option value="community">Community</option>
+                <option value="system">System</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="afActionGrid" class="af-action-grid">
+            <a href="#" class="af-action-card" data-category="core" data-search-item="students manager students_af users mobile password email status">
+              <div class="af-action-main">
+                <div class="af-action-icon">👥</div>
+                <h3 class="af-action-title">Students Manager</h3>
+                <p class="af-action-desc">Manage student profiles, login details, email verification, status, and student IDs.</p>
+              </div>
+              <div class="af-action-bottom">
+                <span class="af-action-meta">students_af</span>
+                <span class="af-open-arrow">→</span>
+              </div>
+            </a>
+
+            <a href="#" class="af-action-card" data-category="learning" data-search-item="courses student courses learning">
+              <div class="af-action-main">
+                <div class="af-action-icon">🎓</div>
+                <h3 class="af-action-title">Courses</h3>
+                <p class="af-action-desc">Create, organize, update, and maintain course structures.</p>
+              </div>
+              <div class="af-action-bottom">
+                <span class="af-action-meta">courses</span>
+                <span class="af-open-arrow">→</span>
+              </div>
+            </a>
+
+            <a href="#" class="af-action-card" data-category="learning" data-search-item="lectures videos classes">
+              <div class="af-action-main">
+                <div class="af-action-icon">🎥</div>
+                <h3 class="af-action-title">Lectures</h3>
+                <p class="af-action-desc">Control lecture content, class resources, and video entries.</p>
+              </div>
+              <div class="af-action-bottom">
+                <span class="af-action-meta">lectures</span>
+                <span class="af-open-arrow">→</span>
+              </div>
+            </a>
+
+            <a href="#" class="af-action-card" data-category="learning" data-search-item="chapters topics ordering">
+              <div class="af-action-main">
+                <div class="af-action-icon">📚</div>
+                <h3 class="af-action-title">Chapters</h3>
+                <p class="af-action-desc">Manage chapter-wise structure, topic order, and course mapping.</p>
+              </div>
+              <div class="af-action-bottom">
+                <span class="af-action-meta">chapters</span>
+                <span class="af-open-arrow">→</span>
+              </div>
+            </a>
+
+            <a href="#" class="af-action-card" data-category="testing" data-search-item="tests exam assessment">
+              <div class="af-action-main">
+                <div class="af-action-icon">🧪</div>
+                <h3 class="af-action-title">Tests</h3>
+                <p class="af-action-desc">Create and maintain test sets, exam metadata, and assessment visibility.</p>
+              </div>
+              <div class="af-action-bottom">
+                <span class="af-action-meta">af_tests</span>
+                <span class="af-open-arrow">→</span>
+              </div>
+            </a>
+
+            <a href="#" class="af-action-card" data-category="testing" data-search-item="test questions question bank options answers">
+              <div class="af-action-main">
+                <div class="af-action-icon">❓</div>
+                <h3 class="af-action-title">Test Questions</h3>
+                <p class="af-action-desc">Manage question banks, options, correct answers, and explanations.</p>
+              </div>
+              <div class="af-action-bottom">
+                <span class="af-action-meta">af_test_questions</span>
+                <span class="af-open-arrow">→</span>
+              </div>
+            </a>
+
+            <a href="#" class="af-action-card" data-category="testing" data-search-item="student answers submitted answers scoring">
+              <div class="af-action-main">
+                <div class="af-action-icon">📝</div>
+                <h3 class="af-action-title">Student Answers</h3>
+                <p class="af-action-desc">Review submitted answers, scoring state, and response records.</p>
+              </div>
+              <div class="af-action-bottom">
+                <span class="af-action-meta">af_test_answers</span>
+                <span class="af-open-arrow">→</span>
+              </div>
+            </a>
+
+            <a href="#" class="af-action-card" data-category="testing" data-search-item="test attempts completion analytics">
+              <div class="af-action-main">
+                <div class="af-action-icon">📊</div>
+                <h3 class="af-action-title">Test Attempts</h3>
+                <p class="af-action-desc">Track attempts, completion state, marks, timing, and activity analytics.</p>
+              </div>
+              <div class="af-action-bottom">
+                <span class="af-action-meta">af_test_attempts</span>
+                <span class="af-open-arrow">→</span>
+              </div>
+            </a>
+
+            <a href="#" class="af-action-card" data-category="access" data-search-item="batch access permissions">
+              <div class="af-action-main">
+                <div class="af-action-icon">🔐</div>
+                <h3 class="af-action-title">Batch Access</h3>
+                <p class="af-action-desc">Grant, revoke, and audit batch-level access permissions.</p>
+              </div>
+              <div class="af-action-bottom">
+                <span class="af-action-meta">batch_access</span>
+                <span class="af-open-arrow">→</span>
+              </div>
+            </a>
+
+            <a href="#" class="af-action-card" data-category="access" data-search-item="full access student permissions">
+              <div class="af-action-main">
+                <div class="af-action-icon">🛡️</div>
+                <h3 class="af-action-title">Full Access Control</h3>
+                <p class="af-action-desc">Control complete student access state and permission rules.</p>
+              </div>
+              <div class="af-action-bottom">
+                <span class="af-action-meta">student_full_access_af</span>
+                <span class="af-open-arrow">→</span>
+              </div>
+            </a>
+
+            <a href="#" class="af-action-card" data-category="access" data-search-item="student courses enrollments">
+              <div class="af-action-main">
+                <div class="af-action-icon">📌</div>
+                <h3 class="af-action-title">Student Courses</h3>
+                <p class="af-action-desc">Map students to enrolled courses and manage learning access.</p>
+              </div>
+              <div class="af-action-bottom">
+                <span class="af-action-meta">student_courses</span>
+                <span class="af-open-arrow">→</span>
+              </div>
+            </a>
+
+            <a href="#" class="af-action-card" data-category="operations" data-search-item="payments batch payments transactions">
+              <div class="af-action-main">
+                <div class="af-action-icon">💳</div>
+                <h3 class="af-action-title">Batch Payments</h3>
+                <p class="af-action-desc">Review payment records, batch transactions, and operational payment status.</p>
+              </div>
+              <div class="af-action-bottom">
+                <span class="af-action-meta">batch_payments_af</span>
+                <span class="af-open-arrow">→</span>
+              </div>
+            </a>
+
+            <a href="#" class="af-action-card" data-category="operations" data-search-item="apk downloads app version android">
+              <div class="af-action-main">
+                <div class="af-action-icon">📲</div>
+                <h3 class="af-action-title">APK Downloads</h3>
+                <p class="af-action-desc">Manage Android app download entries, version notes, and release visibility.</p>
+              </div>
+              <div class="af-action-bottom">
+                <span class="af-action-meta">apk_downloads</span>
+                <span class="af-open-arrow">→</span>
+              </div>
+            </a>
+
+            <a href="#" class="af-action-card" data-category="operations" data-search-item="app notifications announcements">
+              <div class="af-action-main">
+                <div class="af-action-icon">🔔</div>
+                <h3 class="af-action-title">App Notifications</h3>
+                <p class="af-action-desc">Send platform updates, announcements, and important admin notices.</p>
+              </div>
+              <div class="af-action-bottom">
+                <span class="af-action-meta">app_notifications</span>
+                <span class="af-open-arrow">→</span>
+              </div>
+            </a>
+
+            <a href="#" class="af-action-card" data-category="operations" data-search-item="translations language app translations">
+              <div class="af-action-main">
+                <div class="af-action-icon">🌐</div>
+                <h3 class="af-action-title">App Translations</h3>
+                <p class="af-action-desc">Manage multilingual labels, translated content, and app language records.</p>
+              </div>
+              <div class="af-action-bottom">
+                <span class="af-action-meta">app_translations</span>
+                <span class="af-open-arrow">→</span>
+              </div>
+            </a>
+
+            <a href="#" class="af-action-card" data-category="operations" data-search-item="learning activity engagement analytics">
+              <div class="af-action-main">
+                <div class="af-action-icon">📈</div>
+                <h3 class="af-action-title">Learning Activity</h3>
+                <p class="af-action-desc">Track student learning activity, engagement signals, and recent platform usage.</p>
+              </div>
+              <div class="af-action-bottom">
+                <span class="af-action-meta">learning_activity_af</span>
+                <span class="af-open-arrow">→</span>
+              </div>
+            </a>
+
+            <a href="#" class="af-action-card" data-category="community" data-search-item="nexus posts community moderation">
+              <div class="af-action-main">
+                <div class="af-action-icon">📰</div>
+                <h3 class="af-action-title">Nexus Posts</h3>
+                <p class="af-action-desc">Manage community posts, moderation status, and publishing visibility.</p>
+              </div>
+              <div class="af-action-bottom">
+                <span class="af-action-meta">af_nexus_posts_v2</span>
+                <span class="af-open-arrow">→</span>
+              </div>
+            </a>
+
+            <a href="#" class="af-action-card" data-category="community" data-search-item="nexus comments replies discussions">
+              <div class="af-action-main">
+                <div class="af-action-icon">💬</div>
+                <h3 class="af-action-title">Nexus Comments</h3>
+                <p class="af-action-desc">Moderate comments, replies, reports, and discussion quality.</p>
+              </div>
+              <div class="af-action-bottom">
+                <span class="af-action-meta">af_nexus_comments_v2</span>
+                <span class="af-open-arrow">→</span>
+              </div>
+            </a>
+
+            <a href="#" class="af-action-card" data-category="community" data-search-item="post likes reactions engagement">
+              <div class="af-action-main">
+                <div class="af-action-icon">❤️</div>
+                <h3 class="af-action-title">Post Likes</h3>
+                <p class="af-action-desc">Track reactions, engagement signals, and post interaction records.</p>
+              </div>
+              <div class="af-action-bottom">
+                <span class="af-action-meta">af_nexus_post_likes_v2</span>
+                <span class="af-open-arrow">→</span>
+              </div>
+            </a>
+
+            <a href="#" class="af-action-card" data-category="community" data-search-item="contact requests support messages">
+              <div class="af-action-main">
+                <div class="af-action-icon">📨</div>
+                <h3 class="af-action-title">Contact Requests</h3>
+                <p class="af-action-desc">Review support messages, user inquiries, and contact submissions.</p>
+              </div>
+              <div class="af-action-bottom">
+                <span class="af-action-meta">af_contact_requests</span>
+                <span class="af-open-arrow">→</span>
+              </div>
+            </a>
+
+            <a href="#" class="af-action-card" data-category="community" data-search-item="join team applications applicants">
+              <div class="af-action-main">
+                <div class="af-action-icon">🧑‍💼</div>
+                <h3 class="af-action-title">Join Team Applications</h3>
+                <p class="af-action-desc">Review applicants, contributor requests, and team onboarding entries.</p>
+              </div>
+              <div class="af-action-bottom">
+                <span class="af-action-meta">join_team_applications</span>
+                <span class="af-open-arrow">→</span>
+              </div>
+            </a>
+
+            <a href="#" class="af-action-card" data-category="system" data-search-item="bug reports issues errors">
+              <div class="af-action-main">
+                <div class="af-action-icon">🐞</div>
+                <h3 class="af-action-title">Bug Reports</h3>
+                <p class="af-action-desc">Track reported bugs, issue details, and user-submitted technical problems.</p>
+              </div>
+              <div class="af-action-bottom">
+                <span class="af-action-meta">bug_reports</span>
+                <span class="af-open-arrow">→</span>
+              </div>
+            </a>
+
+            <a href="#" class="af-action-card" data-category="system" data-search-item="account delete requests deletion">
+              <div class="af-action-main">
+                <div class="af-action-icon">🧾</div>
+                <h3 class="af-action-title">Delete Requests</h3>
+                <p class="af-action-desc">Process account deletion requests and compliance-related user actions.</p>
+              </div>
+              <div class="af-action-bottom">
+                <span class="af-action-meta">account_delete_requests</span>
+                <span class="af-open-arrow">→</span>
+              </div>
+            </a>
+
+            <a href="#" class="af-action-card" data-category="system" data-search-item="deleted accounts archive">
+              <div class="af-action-main">
+                <div class="af-action-icon">🗑️</div>
+                <h3 class="af-action-title">Deleted Accounts</h3>
+                <p class="af-action-desc">View deleted account archives and historical deletion records.</p>
+              </div>
+              <div class="af-action-bottom">
+                <span class="af-action-meta">deleted_accounts_af</span>
+                <span class="af-open-arrow">→</span>
+              </div>
+            </a>
+          </div>
+        </section>
+
+        <section class="af-section">
+          <div class="af-section-header">
+            <div>
+              <div class="af-section-kicker">Settings</div>
+              <h2 class="af-section-title">Panel Preferences</h2>
+              <p class="af-section-description">
+                These settings are local UI preferences. Backend permissions and data access should remain server-controlled.
+              </p>
+            </div>
+          </div>
+
+          <div class="af-settings-grid">
+            <div class="af-panel-card">
+              <h3 class="af-panel-title">Navigation Setup</h3>
+              <p class="af-panel-text">
+                Keep unfinished modules as <strong>#</strong>. When a page is ready, place it inside its own folder and update the matching link.
+              </p>
+
+              <div class="af-setting-list">
+                <div class="af-setting-item">
+                  <div>
+                    <div class="af-setting-name">Students Manager Link</div>
+                    <div class="af-setting-value">Current: # / Later: ./students/</div>
+                  </div>
+                  <button class="af-mini-button" type="button" data-copy="./students/">Copy</button>
+                </div>
+
+                <div class="af-setting-item">
+                  <div>
+                    <div class="af-setting-name">Courses Link</div>
+                    <div class="af-setting-value">Current: # / Later: ./courses/</div>
+                  </div>
+                  <button class="af-mini-button" type="button" data-copy="./courses/">Copy</button>
+                </div>
+
+                <div class="af-setting-item">
+                  <div>
+                    <div class="af-setting-name">Notifications Link</div>
+                    <div class="af-setting-value">Current: # / Later: ./notifications/</div>
+                  </div>
+                  <button class="af-mini-button" type="button" data-copy="./notifications/">Copy</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="af-panel-card">
+              <h3 class="af-panel-title">Current Admin</h3>
+              <p class="af-panel-text" id="afCurrentAdminText">
+                Admin session detected on this device.
+              </p>
+
+              <div class="af-setting-list">
+                <div class="af-setting-item">
+                  <div>
+                    <div class="af-setting-name">Theme</div>
+                    <div class="af-setting-value" id="afThemeStatus">Dark</div>
+                  </div>
+                  <button id="afSettingsThemeButton" class="af-mini-button" type="button">Toggle</button>
+                </div>
+
+                <div class="af-setting-item">
+                  <div>
+                    <div class="af-setting-name">Session</div>
+                    <div class="af-setting-value">Stored locally</div>
+                  </div>
+                  <button id="afClearSessionButton" class="af-mini-button" type="button">Clear</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <footer class="af-footer">
+          <div>
+            <strong>AcademeForge Admin Panel</strong> — frontend dashboard with protected backend data actions.
+          </div>
+          <div>
+            Developed by Devraj Kumar.
+          </div>
+        </footer>
+      </section>
+    </main>
+  </section>
+
+  <script>
+    (function () {
+      "use strict";
+
+      const CONFIG = {
+        ADMIN_LOGIN_API: "https://afooyyydhlwngzssgqih.supabase.co/functions/v1/admin-auth"
+      };
+
+      const STORAGE_KEYS = {
+        TOKEN: "af_admin_session_token",
+        DEVICE: "af_admin_device_id",
+        USER: "af_admin_user",
+        THEME: "academeforge-admin-theme",
+        REMEMBER: "academeforge-admin-remember"
+      };
+
+      const els = {
+        pageLoader: document.getElementById("afPageLoader"),
+        authScreen: document.getElementById("afAuthScreen"),
+        dashboardScreen: document.getElementById("afDashboardScreen"),
+
+        authThemeToggle: document.getElementById("afAuthThemeToggle"),
+        dashboardThemeToggle: document.getElementById("afDashboardThemeToggle"),
+        settingsThemeButton: document.getElementById("afSettingsThemeButton"),
+        themeStatus: document.getElementById("afThemeStatus"),
+
+        loginForm: document.getElementById("afLoginForm"),
+        adminId: document.getElementById("afAdminId"),
+        adminPassword: document.getElementById("afAdminPassword"),
+        passwordToggle: document.getElementById("afPasswordToggle"),
+        rememberSession: document.getElementById("afRememberSession"),
+        loginButton: document.getElementById("afLoginButton"),
+        authMessage: document.getElementById("afAuthMessage"),
+
+        menuToggle: document.getElementById("afMenuToggle"),
+        sidebarOverlay: document.getElementById("afSidebarOverlay"),
+
+        dashboardSearch: document.getElementById("afDashboardSearch"),
+        categoryFilter: document.getElementById("afCategoryFilter"),
+        actionGrid: document.getElementById("afActionGrid"),
+
+        logoutButton: document.getElementById("afLogoutButton"),
+        clearSessionButton: document.getElementById("afClearSessionButton"),
+
+        adminAvatar: document.getElementById("afAdminAvatar"),
+        adminMiniName: document.getElementById("afAdminMiniName"),
+        adminMiniRole: document.getElementById("afAdminMiniRole"),
+        heroDescription: document.getElementById("afHeroDescription"),
+        currentAdminText: document.getElementById("afCurrentAdminText")
+      };
+
+      function clean(value) {
+        return String(value || "").trim();
       }
-    }
 
-    function safeLocalStorageSet(key, value) {
-      try {
-        localStorage.setItem(key, value);
-      } catch (error) {
-        console.error("LocalStorage set failed:", error);
-      }
-    }
-
-    function safeLocalStorageRemove(key) {
-      try {
-        localStorage.removeItem(key);
-      } catch (error) {
-        console.error("LocalStorage remove failed:", error);
-      }
-    }
-
-    function createFallbackUuid() {
-      if (window.crypto && typeof window.crypto.randomUUID === "function") {
-        return window.crypto.randomUUID();
+      function normalizeText(value) {
+        return clean(value).toLowerCase().replace(/\s+/g, " ");
       }
 
-      const bytes = new Uint8Array(16);
-
-      if (window.crypto && typeof window.crypto.getRandomValues === "function") {
-        window.crypto.getRandomValues(bytes);
-      } else {
-        for (let i = 0; i < bytes.length; i += 1) {
-          bytes[i] = Math.floor(Math.random() * 256);
+      function safeJsonParse(value, fallback) {
+        try {
+          const parsed = JSON.parse(value);
+          return parsed && typeof parsed === "object" ? parsed : fallback;
+        } catch (_error) {
+          return fallback;
         }
       }
 
-      bytes[6] = (bytes[6] & 0x0f) | 0x40;
-      bytes[8] = (bytes[8] & 0x3f) | 0x80;
+      function getPreferredTheme() {
+        const saved = localStorage.getItem(STORAGE_KEYS.THEME);
+        if (saved === "light" || saved === "dark") {
+          return saved;
+        }
 
-      const hex = Array.from(bytes).map(function (byte) {
-        return byte.toString(16).padStart(2, "0");
-      }).join("");
+        if (window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches) {
+          return "light";
+        }
 
-      return [
-        hex.slice(0, 8),
-        hex.slice(8, 12),
-        hex.slice(12, 16),
-        hex.slice(16, 20),
-        hex.slice(20)
-      ].join("-");
-    }
-
-    function getDeviceId() {
-      let id = safeLocalStorageGet(DEVICE_KEY);
-
-      if (!id) {
-        id = "web_" + createFallbackUuid();
-        safeLocalStorageSet(DEVICE_KEY, id);
+        return "dark";
       }
 
-      return id;
-    }
+      function applyTheme(theme) {
+        const nextTheme = theme === "light" ? "light" : "dark";
+        document.documentElement.setAttribute("data-theme", nextTheme);
+        localStorage.setItem(STORAGE_KEYS.THEME, nextTheme);
 
-    function setMessage(type, text) {
-      if (!messageBox) {
-        return;
+        const icon = nextTheme === "dark" ? "🌙" : "☀️";
+
+        if (els.authThemeToggle) {
+          els.authThemeToggle.textContent = icon;
+        }
+
+        if (els.dashboardThemeToggle) {
+          els.dashboardThemeToggle.textContent = icon;
+        }
+
+        if (els.themeStatus) {
+          els.themeStatus.textContent = nextTheme === "dark" ? "Dark" : "Light";
+        }
       }
 
-      messageBox.className = "message show " + type;
-      messageBox.textContent = String(text || "");
-    }
-
-    function clearMessage() {
-      if (!messageBox) {
-        return;
-      }
-
-      messageBox.className = "message";
-      messageBox.textContent = "";
-    }
-
-    function setLoading(isLoading) {
-      if (!submitBtn) {
-        return;
-      }
-
-      submitBtn.disabled = Boolean(isLoading);
-      submitBtn.textContent = isLoading ? "Verifying..." : "Login & Load Dashboard";
-    }
-
-    function applyTheme(theme) {
-      const normalized = theme === "light" ? "light" : "dark";
-
-      root.setAttribute("data-theme", normalized);
-      safeLocalStorageSet(THEME_KEY, normalized);
-
-      if (themeBtn) {
-        themeBtn.textContent = normalized === "dark" ? "🌙" : "☀️";
-      }
-    }
-
-    function loadSavedTheme() {
-      const saved = safeLocalStorageGet(THEME_KEY);
-      applyTheme(saved === "light" || saved === "dark" ? saved : "dark");
-    }
-
-    function parseJsonSafely(text) {
-      try {
-        return JSON.parse(text);
-      } catch (error) {
-        return null;
-      }
-    }
-
-    function looksLikeHtmlDocument(text, contentType) {
-      const normalizedContentType = String(contentType || "").toLowerCase();
-      const normalizedText = String(text || "").trim().toLowerCase();
-
-      return (
-        normalizedContentType.includes("text/html") ||
-        normalizedText.startsWith("<!doctype html") ||
-        normalizedText.startsWith("<html") ||
-        normalizedText.includes("<head") ||
-        normalizedText.includes("<body")
-      );
-    }
-
-    function executeInjectedScripts(container) {
-      const scripts = container.querySelectorAll("script");
-
-      scripts.forEach(function (oldScript) {
-        const newScript = document.createElement("script");
-
-        Array.from(oldScript.attributes).forEach(function (attr) {
-          newScript.setAttribute(attr.name, attr.value);
-        });
-
-        newScript.textContent = oldScript.textContent || "";
-        oldScript.parentNode.replaceChild(newScript, oldScript);
-      });
-    }
-
-    function mountDashboard(htmlText) {
-      if (!dashboardMount) {
-        throw new Error("Dashboard mount element missing.");
-      }
-
-      clearMessage();
-
-      dashboardMount.innerHTML = htmlText;
-      body.classList.add("dashboard-loaded");
-      dashboardMount.classList.add("active");
-
-      executeInjectedScripts(dashboardMount);
-
-      window.scrollTo({
-        top: 0,
-        left: 0,
-        behavior: "instant"
-      });
-    }
-
-    async function loadDashboard(sessionToken, deviceId) {
-      if (!sessionToken || String(sessionToken).trim().length < 32) {
-        throw new Error("Admin session token missing.");
-      }
-
-      if (!deviceId || String(deviceId).trim().length < 8) {
-        throw new Error("Admin device ID missing.");
-      }
-
-      const response = await fetch(DASHBOARD_ENDPOINT, {
-        method: "GET",
-        headers: {
-          "x-admin-token": String(sessionToken),
-          "x-device-id": String(deviceId),
-          "Accept": "text/html, application/json"
-        },
-        cache: "no-store",
-        credentials: "omit"
-      });
-
-      const contentType = response.headers.get("content-type") || "";
-      const text = await response.text();
-
-      if (!response.ok) {
-        safeLocalStorageRemove(TOKEN_KEY);
-
-        const parsed = parseJsonSafely(text);
-        const message =
-          parsed && (parsed.message || parsed.error)
-            ? parsed.message || parsed.error
-            : "Unable to load dashboard.";
-
-        throw new Error(message);
-      }
-
-      if (!looksLikeHtmlDocument(text, contentType)) {
-        const parsed = parseJsonSafely(text);
-        const message =
-          parsed && (parsed.message || parsed.error)
-            ? parsed.message || parsed.error
-            : "Invalid dashboard response.";
-
-        console.error("Invalid dashboard response:", {
-          status: response.status,
-          ok: response.ok,
-          contentType: contentType,
-          preview: String(text || "").slice(0, 500)
-        });
-
-        throw new Error(message);
-      }
-
-      mountDashboard(text);
-    }
-
-    async function login(adminId, password) {
-      const deviceId = getDeviceId();
-
-      const response = await fetch(AUTH_ENDPOINT, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json"
-        },
-        body: JSON.stringify({
-          admin_id: adminId,
-          password: password,
-          device_id: deviceId,
-          device_name: navigator.userAgent || "Unknown browser"
-        }),
-        cache: "no-store",
-        credentials: "omit"
-      });
-
-      const text = await response.text();
-      const data = parseJsonSafely(text) || {
-        ok: false,
-        message: "Invalid server response."
-      };
-
-      if (!response.ok || !data.ok) {
-        throw new Error(data.message || data.error || "Admin login failed.");
-      }
-
-      if (!data.session_token) {
-        throw new Error("Session token missing.");
-      }
-
-      const finalDeviceId = data.device_id || deviceId;
-
-      safeLocalStorageSet(TOKEN_KEY, data.session_token);
-      safeLocalStorageSet(DEVICE_KEY, finalDeviceId);
-
-      return {
-        sessionToken: data.session_token,
-        deviceId: finalDeviceId
-      };
-    }
-
-    async function restoreSessionIfPossible() {
-      const token = safeLocalStorageGet(TOKEN_KEY);
-      const deviceId = safeLocalStorageGet(DEVICE_KEY);
-
-      if (!token || !deviceId) {
-        return;
-      }
-
-      try {
-        setMessage("success", "Restoring secure admin session...");
-        await loadDashboard(token, deviceId);
-      } catch (error) {
-        safeLocalStorageRemove(TOKEN_KEY);
-        setMessage("error", error instanceof Error ? error.message : "Session restore failed.");
-      }
-    }
-
-    loadSavedTheme();
-
-    if (themeBtn) {
-      themeBtn.addEventListener("click", function () {
-        const current = root.getAttribute("data-theme") === "light" ? "light" : "dark";
+      function toggleTheme() {
+        const current = document.documentElement.getAttribute("data-theme") === "light" ? "light" : "dark";
         applyTheme(current === "light" ? "dark" : "light");
-      });
-    }
+      }
 
-    if (loginForm) {
-      loginForm.addEventListener("submit", async function (event) {
+      function showElement(element) {
+        if (element) {
+          element.classList.remove("af-hidden");
+        }
+      }
+
+      function hideElement(element) {
+        if (element) {
+          element.classList.add("af-hidden");
+        }
+      }
+
+      function hideLoader() {
+        hideElement(els.pageLoader);
+      }
+
+      function showAuthScreen() {
+        hideElement(els.dashboardScreen);
+        showElement(els.authScreen);
+        hideLoader();
+
+        setTimeout(function () {
+          if (els.adminId) {
+            els.adminId.focus();
+          }
+        }, 80);
+      }
+
+      function showDashboardScreen() {
+        hideElement(els.authScreen);
+        showElement(els.dashboardScreen);
+        hideLoader();
+        renderAdminIdentity();
+      }
+
+      function getStoredToken() {
+        return clean(localStorage.getItem(STORAGE_KEYS.TOKEN));
+      }
+
+      function getStoredDeviceId() {
+        return clean(localStorage.getItem(STORAGE_KEYS.DEVICE));
+      }
+
+      function getStoredUser() {
+        return safeJsonParse(localStorage.getItem(STORAGE_KEYS.USER) || "{}", {});
+      }
+
+      function hasLocalSession() {
+        const token = getStoredToken();
+        const deviceId = getStoredDeviceId();
+
+        return Boolean(token && token.length >= 32 && deviceId);
+      }
+
+      function createDeviceId() {
+        const existing = getStoredDeviceId();
+
+        if (existing) {
+          return existing;
+        }
+
+        const randomPart = new Uint8Array(18);
+
+        if (window.crypto && window.crypto.getRandomValues) {
+          window.crypto.getRandomValues(randomPart);
+        } else {
+          for (let index = 0; index < randomPart.length; index += 1) {
+            randomPart[index] = Math.floor(Math.random() * 256);
+          }
+        }
+
+        const hex = Array.from(randomPart)
+          .map(function (item) {
+            return item.toString(16).padStart(2, "0");
+          })
+          .join("");
+
+        const deviceId = "device_" + Date.now().toString(36) + "_" + hex;
+        localStorage.setItem(STORAGE_KEYS.DEVICE, deviceId);
+        return deviceId;
+      }
+
+      function clearSession() {
+        localStorage.removeItem(STORAGE_KEYS.TOKEN);
+        localStorage.removeItem(STORAGE_KEYS.DEVICE);
+        localStorage.removeItem(STORAGE_KEYS.USER);
+      }
+
+      function logout() {
+        clearSession();
+        showAuthScreen();
+      }
+
+      function setAuthMessage(type, message) {
+        if (!els.authMessage) {
+          return;
+        }
+
+        const finalType = type === "success" ? "af-success" : "af-error";
+        els.authMessage.className = "af-auth-message af-show " + finalType;
+        els.authMessage.textContent = message;
+      }
+
+      function clearAuthMessage() {
+        if (!els.authMessage) {
+          return;
+        }
+
+        els.authMessage.className = "af-auth-message";
+        els.authMessage.textContent = "";
+      }
+
+      function setLoginLoading(isLoading) {
+        if (!els.loginButton) {
+          return;
+        }
+
+        els.loginButton.disabled = isLoading;
+        els.loginButton.textContent = isLoading ? "Verifying admin..." : "Login & Open Dashboard";
+      }
+
+      function getInitials(name) {
+        const cleaned = clean(name);
+
+        if (!cleaned) {
+          return "AF";
+        }
+
+        const parts = cleaned.split(/\s+/).filter(Boolean);
+
+        if (parts.length === 1) {
+          return parts[0].slice(0, 2).toUpperCase();
+        }
+
+        return (parts[0][0] + parts[1][0]).toUpperCase();
+      }
+
+      function renderAdminIdentity() {
+        const user = getStoredUser();
+
+        const adminName =
+          clean(user.full_name) ||
+          clean(user.name) ||
+          clean(user.admin_id) ||
+          "Admin";
+
+        const adminRole =
+          clean(user.role) ||
+          "Active Session";
+
+        const adminEmail =
+          clean(user.email) ||
+          "admin session";
+
+        if (els.adminAvatar) {
+          els.adminAvatar.textContent = getInitials(adminName);
+        }
+
+        if (els.adminMiniName) {
+          els.adminMiniName.textContent = adminName;
+        }
+
+        if (els.adminMiniRole) {
+          els.adminMiniRole.textContent = adminRole;
+        }
+
+        if (els.heroDescription) {
+          els.heroDescription.textContent =
+            "Logged in as " + adminName + " (" + adminEmail + "). Manage modules from this frontend dashboard; real records should be fetched through protected backend APIs.";
+        }
+
+        if (els.currentAdminText) {
+          els.currentAdminText.textContent =
+            "Current session belongs to " + adminName + ". Data access must still be verified by backend APIs.";
+        }
+      }
+
+      function extractLoginResponse(payload) {
+        if (!payload || typeof payload !== "object") {
+          return {
+            ok: false,
+            message: "Invalid login response."
+          };
+        }
+
+        const token =
+          clean(payload.session_token) ||
+          clean(payload.token) ||
+          clean(payload.admin_token) ||
+          clean(payload.access_token);
+
+        const deviceId =
+          clean(payload.device_id) ||
+          getStoredDeviceId();
+
+        const user =
+          payload.admin && typeof payload.admin === "object"
+            ? payload.admin
+            : payload.user && typeof payload.user === "object"
+              ? payload.user
+              : {
+                  admin_id: payload.admin_id,
+                  email: payload.email,
+                  full_name: payload.full_name,
+                  role: payload.role
+                };
+
+        return {
+          ok: Boolean(payload.ok !== false && token),
+          message: clean(payload.message) || "",
+          token,
+          deviceId,
+          user
+        };
+      }
+
+      async function loginAdmin(adminId, password) {
+        const deviceId = createDeviceId();
+
+        const response = await fetch(CONFIG.ADMIN_LOGIN_API, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-device-id": deviceId
+          },
+          body: JSON.stringify({
+            admin_id: adminId,
+            password: password,
+            device_id: deviceId
+          }),
+          cache: "no-store"
+        });
+
+        const responseText = await response.text();
+        let payload = {};
+
+        try {
+          payload = responseText ? JSON.parse(responseText) : {};
+        } catch (_error) {
+          throw new Error("Login API returned invalid response.");
+        }
+
+        if (!response.ok) {
+          throw new Error(clean(payload.message) || "Admin login failed.");
+        }
+
+        const extracted = extractLoginResponse(payload);
+
+        if (!extracted.ok || !extracted.token) {
+          throw new Error(extracted.message || "Login successful but session token missing.");
+        }
+
+        localStorage.setItem(STORAGE_KEYS.TOKEN, extracted.token);
+        localStorage.setItem(STORAGE_KEYS.DEVICE, extracted.deviceId || deviceId);
+        localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(extracted.user || {}));
+
+        return extracted;
+      }
+
+      async function handleLoginSubmit(event) {
         event.preventDefault();
 
-        const adminId = String(adminIdInput && adminIdInput.value ? adminIdInput.value : "").trim().toLowerCase();
-        const password = String(passwordInput && passwordInput.value ? passwordInput.value : "").trim();
+        clearAuthMessage();
 
-        clearMessage();
+        const adminId = clean(els.adminId ? els.adminId.value : "");
+        const password = clean(els.adminPassword ? els.adminPassword.value : "");
 
-        if (!adminId || !password) {
-          setMessage("error", "Admin ID and password are required.");
+        if (!adminId) {
+          setAuthMessage("error", "Enter admin ID.");
+          return;
+        }
+
+        if (!password) {
+          setAuthMessage("error", "Enter password.");
           return;
         }
 
         try {
-          setLoading(true);
-          setMessage("success", "Checking admin credentials...");
+          setLoginLoading(true);
 
-          const session = await login(adminId, password);
+          await loginAdmin(adminId, password);
 
-          setMessage("success", "Login successful. Loading protected dashboard...");
-          await loadDashboard(session.sessionToken, session.deviceId);
+          if (els.rememberSession && !els.rememberSession.checked) {
+            sessionStorage.setItem(STORAGE_KEYS.REMEMBER, "session-only");
+          } else {
+            sessionStorage.removeItem(STORAGE_KEYS.REMEMBER);
+          }
+
+          setAuthMessage("success", "Login successful. Opening dashboard...");
+          setTimeout(showDashboardScreen, 280);
         } catch (error) {
-          setMessage("error", error instanceof Error ? error.message : "Login failed.");
+          setAuthMessage("error", error instanceof Error ? error.message : "Login failed.");
         } finally {
-          setLoading(false);
+          setLoginLoading(false);
         }
-      });
-    }
+      }
 
-    restoreSessionIfPossible();
-  })();
-</script>
+      function togglePasswordVisibility() {
+        if (!els.adminPassword || !els.passwordToggle) {
+          return;
+        }
+
+        const isPassword = els.adminPassword.type === "password";
+        els.adminPassword.type = isPassword ? "text" : "password";
+        els.passwordToggle.textContent = isPassword ? "🔓" : "🔒";
+      }
+
+      function closeSidebar() {
+        document.body.classList.remove("af-sidebar-open");
+      }
+
+      function toggleSidebar() {
+        document.body.classList.toggle("af-sidebar-open");
+      }
+
+      function filterModules() {
+        const query = normalizeText(els.dashboardSearch ? els.dashboardSearch.value : "");
+        const category = els.categoryFilter ? els.categoryFilter.value : "all";
+
+        document.querySelectorAll(".af-action-card").forEach(function (card) {
+          const cardCategory = card.getAttribute("data-category") || "";
+          const searchText = normalizeText((card.getAttribute("data-search-item") || "") + " " + card.textContent);
+
+          const categoryMatches = category === "all" || cardCategory === category;
+          const queryMatches = !query || searchText.includes(query);
+
+          card.style.display = categoryMatches && queryMatches ? "" : "none";
+        });
+      }
+
+      function copyText(value, button) {
+        const text = clean(value);
+
+        if (!text) {
+          return;
+        }
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(function () {
+            const oldText = button.textContent;
+            button.textContent = "Copied";
+            setTimeout(function () {
+              button.textContent = oldText;
+            }, 900);
+          }).catch(function () {
+            window.prompt("Copy this path:", text);
+          });
+        } else {
+          window.prompt("Copy this path:", text);
+        }
+      }
+
+      function handleHashOnlyLink(event) {
+        const link = event.target.closest("a[href='#']");
+
+        if (!link) {
+          return;
+        }
+
+        event.preventDefault();
+
+        if (link.classList.contains("af-action-card")) {
+          const titleElement = link.querySelector(".af-action-title");
+          const title = titleElement ? clean(titleElement.textContent) : "This module";
+          window.alert(title + " page is not connected yet. Replace href=\"#\" with the module folder path when ready.");
+        }
+      }
+
+      function bindEvents() {
+        if (els.authThemeToggle) {
+          els.authThemeToggle.addEventListener("click", toggleTheme);
+        }
+
+        if (els.dashboardThemeToggle) {
+          els.dashboardThemeToggle.addEventListener("click", toggleTheme);
+        }
+
+        if (els.settingsThemeButton) {
+          els.settingsThemeButton.addEventListener("click", toggleTheme);
+        }
+
+        if (els.loginForm) {
+          els.loginForm.addEventListener("submit", handleLoginSubmit);
+        }
+
+        if (els.passwordToggle) {
+          els.passwordToggle.addEventListener("click", togglePasswordVisibility);
+        }
+
+        if (els.menuToggle) {
+          els.menuToggle.addEventListener("click", toggleSidebar);
+        }
+
+        if (els.sidebarOverlay) {
+          els.sidebarOverlay.addEventListener("click", closeSidebar);
+        }
+
+        if (els.dashboardSearch) {
+          els.dashboardSearch.addEventListener("input", filterModules);
+        }
+
+        if (els.categoryFilter) {
+          els.categoryFilter.addEventListener("change", filterModules);
+        }
+
+        if (els.logoutButton) {
+          els.logoutButton.addEventListener("click", logout);
+        }
+
+        if (els.clearSessionButton) {
+          els.clearSessionButton.addEventListener("click", logout);
+        }
+
+        document.addEventListener("click", function (event) {
+          const copyButton = event.target.closest("[data-copy]");
+
+          if (copyButton) {
+            copyText(copyButton.getAttribute("data-copy"), copyButton);
+            return;
+          }
+
+          handleHashOnlyLink(event);
+        });
+
+        document.addEventListener("keydown", function (event) {
+          if (event.key === "Escape") {
+            closeSidebar();
+          }
+        });
+      }
+
+      function boot() {
+        applyTheme(getPreferredTheme());
+        bindEvents();
+
+        window.setTimeout(function () {
+          if (hasLocalSession()) {
+            showDashboardScreen();
+          } else {
+            showAuthScreen();
+          }
+        }, 220);
+      }
+
+      boot();
+    })();
+  </script>
 </body>
 </html>
