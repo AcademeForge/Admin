@@ -3,96 +3,49 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AcademeForge Admin Dashboard</title>
+
+  <title>AcademeForge Admin Login</title>
 
   <style>
-    /* =========================================================
-       ACADEMEFORGE ADMIN DASHBOARD
-       Single File: HTML + CSS + JS
-       ========================================================= */
-
     :root {
       --font-main: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-
-      --radius-xs: 8px;
-      --radius-sm: 12px;
-      --radius-md: 16px;
-      --radius-lg: 22px;
-      --radius-xl: 28px;
-
+      --radius-sm: 14px;
+      --radius-md: 18px;
+      --radius-lg: 26px;
       --transition-fast: 160ms ease;
       --transition-normal: 240ms ease;
-      --transition-slow: 360ms ease;
-
-      --sidebar-width: 292px;
-      --topbar-height: 76px;
-
-      --shadow-sm: 0 8px 24px rgba(0, 0, 0, 0.08);
-      --shadow-md: 0 16px 48px rgba(0, 0, 0, 0.16);
-      --shadow-lg: 0 24px 80px rgba(0, 0, 0, 0.24);
-
-      --success: #18b981;
-      --warning: #f59e0b;
-      --danger: #ef4444;
-      --info: #38bdf8;
-      --purple: #8b5cf6;
-      --pink: #ec4899;
-      --indigo: #6366f1;
-      --cyan: #06b6d4;
     }
 
     html[data-theme="dark"] {
       --bg-main: #070a12;
-      --bg-soft: #0d1220;
-      --bg-elevated: #111827;
-      --bg-card: rgba(17, 24, 39, 0.82);
-      --bg-card-solid: #111827;
-      --bg-hover: rgba(255, 255, 255, 0.06);
-      --bg-active: rgba(20, 184, 166, 0.16);
-
+      --bg-card: rgba(17, 24, 39, 0.86);
+      --bg-input: rgba(15, 23, 42, 0.92);
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
       --text-soft: #cbd5e1;
-      --text-inverse: #020617;
-
       --border-soft: rgba(148, 163, 184, 0.18);
       --border-strong: rgba(148, 163, 184, 0.32);
-
       --primary: #14b8a6;
       --primary-strong: #2dd4bf;
-      --primary-soft: rgba(20, 184, 166, 0.14);
-
+      --danger: #ef4444;
+      --success: #18b981;
       --gradient-main: linear-gradient(135deg, #14b8a6 0%, #6366f1 52%, #8b5cf6 100%);
-      --gradient-card: linear-gradient(145deg, rgba(20, 184, 166, 0.18), rgba(99, 102, 241, 0.12), rgba(139, 92, 246, 0.08));
-      --glass: rgba(15, 23, 42, 0.72);
-      --input-bg: rgba(15, 23, 42, 0.88);
     }
 
     html[data-theme="light"] {
       --bg-main: #f5f7fb;
-      --bg-soft: #eef2f7;
-      --bg-elevated: #ffffff;
-      --bg-card: rgba(255, 255, 255, 0.88);
-      --bg-card-solid: #ffffff;
-      --bg-hover: rgba(15, 23, 42, 0.055);
-      --bg-active: rgba(13, 148, 136, 0.12);
-
+      --bg-card: rgba(255, 255, 255, 0.92);
+      --bg-input: rgba(255, 255, 255, 0.96);
       --text-main: #0f172a;
       --text-muted: #64748b;
       --text-soft: #334155;
-      --text-inverse: #ffffff;
-
       --border-soft: rgba(15, 23, 42, 0.12);
       --border-strong: rgba(15, 23, 42, 0.2);
-
       --primary: #0d9488;
       --primary-strong: #0f766e;
-      --primary-soft: rgba(13, 148, 136, 0.12);
-
+      --danger: #dc2626;
+      --success: #059669;
       --gradient-main: linear-gradient(135deg, #0d9488 0%, #4f46e5 52%, #7c3aed 100%);
-      --gradient-card: linear-gradient(145deg, rgba(13, 148, 136, 0.12), rgba(79, 70, 229, 0.08), rgba(124, 58, 237, 0.06));
-      --glass: rgba(255, 255, 255, 0.72);
-      --input-bg: rgba(255, 255, 255, 0.92);
     }
 
     * {
@@ -101,29 +54,21 @@
       padding: 0;
     }
 
-    html {
-      scroll-behavior: smooth;
-    }
-
     body {
       min-height: 100vh;
       font-family: var(--font-main);
       background:
-        radial-gradient(circle at top left, rgba(20, 184, 166, 0.16), transparent 34%),
-        radial-gradient(circle at top right, rgba(99, 102, 241, 0.14), transparent 34%),
+        radial-gradient(circle at top left, rgba(20, 184, 166, 0.18), transparent 34%),
+        radial-gradient(circle at top right, rgba(99, 102, 241, 0.16), transparent 34%),
         var(--bg-main);
       color: var(--text-main);
-      overflow-x: hidden;
-    }
-
-    a {
-      color: inherit;
-      text-decoration: none;
+      display: grid;
+      place-items: center;
+      padding: 22px;
     }
 
     button,
-    input,
-    select {
+    input {
       font: inherit;
     }
 
@@ -132,443 +77,104 @@
       cursor: pointer;
     }
 
-    ::selection {
-      background: var(--primary);
-      color: white;
-    }
-
-    .app-shell {
-      min-height: 100vh;
+    .login-shell {
+      width: min(100%, 1120px);
       display: grid;
-      grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+      grid-template-columns: minmax(0, 1.05fr) minmax(380px, 0.95fr);
+      gap: 22px;
+      align-items: stretch;
     }
 
-    /* =========================================================
-       SIDEBAR
-       ========================================================= */
-
-    .sidebar {
-      position: sticky;
-      top: 0;
-      height: 100vh;
-      background: var(--glass);
-      backdrop-filter: blur(24px);
-      border-right: 1px solid var(--border-soft);
-      display: flex;
-      flex-direction: column;
-      z-index: 50;
-      transition: transform var(--transition-normal), background var(--transition-normal);
-    }
-
-    .brand {
-      height: var(--topbar-height);
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 0 22px;
-      border-bottom: 1px solid var(--border-soft);
-    }
-
-    .brand-logo {
-      width: 42px;
-      height: 42px;
-      border-radius: 14px;
-      display: grid;
-      place-items: center;
-      background: var(--gradient-main);
-      color: white;
-      font-weight: 900;
-      box-shadow: 0 14px 32px rgba(20, 184, 166, 0.22);
-      flex: 0 0 auto;
-    }
-
-    .brand-copy {
-      min-width: 0;
-    }
-
-    .brand-title {
-      font-size: 15px;
-      font-weight: 900;
-      letter-spacing: -0.02em;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .brand-subtitle {
-      margin-top: 2px;
-      color: var(--text-muted);
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    .sidebar-scroll {
-      flex: 1;
-      overflow-y: auto;
-      padding: 18px 14px 22px;
-    }
-
-    .sidebar-scroll::-webkit-scrollbar {
-      width: 8px;
-    }
-
-    .sidebar-scroll::-webkit-scrollbar-thumb {
-      background: var(--border-strong);
-      border-radius: 999px;
-    }
-
-    .nav-group {
-      margin-bottom: 24px;
-    }
-
-    .nav-label {
-      padding: 0 10px 9px;
-      color: var(--text-muted);
-      font-size: 11px;
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: 0.11em;
-    }
-
-    .nav-list {
-      display: grid;
-      gap: 6px;
-    }
-
-    .nav-link {
-      min-height: 44px;
-      display: flex;
-      align-items: center;
-      gap: 11px;
-      padding: 10px 12px;
-      border-radius: 14px;
-      color: var(--text-soft);
-      font-size: 14px;
-      font-weight: 760;
-      transition:
-        background var(--transition-fast),
-        color var(--transition-fast),
-        transform var(--transition-fast);
-    }
-
-    .nav-link:hover {
-      background: var(--bg-hover);
-      color: var(--text-main);
-      transform: translateX(2px);
-    }
-
-    .nav-link.active {
-      background: var(--bg-active);
-      color: var(--primary-strong);
-    }
-
-    .nav-icon {
-      width: 22px;
-      height: 22px;
-      display: grid;
-      place-items: center;
-      flex: 0 0 auto;
-      font-size: 17px;
-    }
-
-    .nav-text {
-      min-width: 0;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .sidebar-footer {
-      padding: 14px;
-      border-top: 1px solid var(--border-soft);
-    }
-
-    .admin-mini-card {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px;
+    .brand-panel,
+    .login-card {
       border: 1px solid var(--border-soft);
-      border-radius: 18px;
       background: var(--bg-card);
-    }
-
-    .admin-avatar {
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      background: var(--gradient-main);
-      display: grid;
-      place-items: center;
-      color: white;
-      font-weight: 900;
-      flex: 0 0 auto;
-    }
-
-    .admin-info {
-      min-width: 0;
-    }
-
-    .admin-name {
-      font-size: 13px;
-      font-weight: 900;
-      white-space: nowrap;
+      border-radius: 32px;
+      backdrop-filter: blur(24px);
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.22);
       overflow: hidden;
-      text-overflow: ellipsis;
     }
 
-    .admin-role {
-      margin-top: 2px;
-      color: var(--text-muted);
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    /* =========================================================
-       MAIN LAYOUT
-       ========================================================= */
-
-    .main {
-      min-width: 0;
+    .brand-panel {
+      position: relative;
+      padding: 34px;
+      min-height: 620px;
       display: flex;
       flex-direction: column;
-    }
-
-    .topbar {
-      position: sticky;
-      top: 0;
-      z-index: 40;
-      height: var(--topbar-height);
-      display: flex;
-      align-items: center;
       justify-content: space-between;
-      gap: 16px;
-      padding: 0 28px;
-      background: var(--glass);
-      backdrop-filter: blur(24px);
-      border-bottom: 1px solid var(--border-soft);
     }
 
-    .topbar-left {
+    .brand-panel::before {
+      content: "";
+      position: absolute;
+      width: 360px;
+      height: 360px;
+      border-radius: 50%;
+      right: -120px;
+      bottom: -130px;
+      background: rgba(20, 184, 166, 0.22);
+      filter: blur(36px);
+      pointer-events: none;
+    }
+
+    .brand-logo-row {
       display: flex;
       align-items: center;
       gap: 14px;
-      min-width: 0;
-    }
-
-    .menu-toggle {
-      width: 44px;
-      height: 44px;
-      border-radius: 14px;
-      display: none;
-      place-items: center;
-      background: var(--bg-card);
-      color: var(--text-main);
-      border: 1px solid var(--border-soft);
-      transition: transform var(--transition-fast), background var(--transition-fast);
-    }
-
-    .menu-toggle:hover {
-      background: var(--bg-hover);
-      transform: translateY(-1px);
-    }
-
-    .page-kicker {
-      color: var(--text-muted);
-      font-size: 12px;
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: 0.11em;
-    }
-
-    .page-title {
-      margin-top: 3px;
-      font-size: 20px;
-      font-weight: 950;
-      letter-spacing: -0.035em;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .topbar-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex: 0 0 auto;
-    }
-
-    .search-box {
-      position: relative;
-      width: min(360px, 34vw);
-    }
-
-    .search-box input {
-      width: 100%;
-      height: 44px;
-      border: 1px solid var(--border-soft);
-      border-radius: 999px;
-      padding: 0 46px 0 44px;
-      background: var(--input-bg);
-      color: var(--text-main);
-      outline: none;
-      transition: border var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
-    }
-
-    .search-box input:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 4px var(--primary-soft);
-    }
-
-    .search-icon {
-      position: absolute;
-      left: 16px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--text-muted);
-      font-size: 15px;
-    }
-
-    .shortcut {
-      position: absolute;
-      right: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--text-muted);
-      font-size: 11px;
-      font-weight: 900;
-      border: 1px solid var(--border-soft);
-      border-radius: 999px;
-      padding: 3px 7px;
-    }
-
-    .icon-btn,
-    .theme-toggle {
-      width: 44px;
-      height: 44px;
-      border-radius: 14px;
-      display: grid;
-      place-items: center;
-      border: 1px solid var(--border-soft);
-      background: var(--bg-card);
-      color: var(--text-main);
-      transition:
-        transform var(--transition-fast),
-        background var(--transition-fast),
-        border var(--transition-fast);
-    }
-
-    .icon-btn:hover,
-    .theme-toggle:hover {
-      transform: translateY(-1px);
-      background: var(--bg-hover);
-      border-color: var(--border-strong);
-    }
-
-    .primary-btn {
-      min-height: 44px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 9px;
-      border-radius: 999px;
-      padding: 0 18px;
-      background: var(--gradient-main);
-      color: white;
-      font-size: 14px;
-      font-weight: 900;
-      box-shadow: 0 14px 34px rgba(20, 184, 166, 0.22);
-      transition: transform var(--transition-fast), filter var(--transition-fast);
-    }
-
-    .primary-btn:hover {
-      transform: translateY(-1px);
-      filter: brightness(1.05);
-    }
-
-    .content {
-      width: 100%;
-      max-width: 1680px;
-      margin: 0 auto;
-      padding: 28px;
-    }
-
-    /* =========================================================
-       HERO
-       ========================================================= */
-
-    .hero {
-      position: relative;
-      overflow: hidden;
-      border-radius: var(--radius-xl);
-      padding: 28px;
-      background:
-        linear-gradient(135deg, rgba(20, 184, 166, 0.18), rgba(99, 102, 241, 0.12), rgba(139, 92, 246, 0.10)),
-        var(--bg-card);
-      border: 1px solid var(--border-soft);
-      box-shadow: var(--shadow-sm);
-    }
-
-    .hero::before {
-      content: "";
-      position: absolute;
-      inset: -80px auto auto -80px;
-      width: 260px;
-      height: 260px;
-      border-radius: 50%;
-      background: rgba(20, 184, 166, 0.22);
-      filter: blur(34px);
-      pointer-events: none;
-    }
-
-    .hero::after {
-      content: "";
-      position: absolute;
-      right: -90px;
-      bottom: -110px;
-      width: 340px;
-      height: 340px;
-      border-radius: 50%;
-      background: rgba(99, 102, 241, 0.22);
-      filter: blur(42px);
-      pointer-events: none;
-    }
-
-    .hero-inner {
       position: relative;
       z-index: 1;
+    }
+
+    .brand-logo {
+      width: 54px;
+      height: 54px;
+      border-radius: 18px;
       display: grid;
-      grid-template-columns: minmax(0, 1.45fr) minmax(320px, 0.55fr);
-      gap: 24px;
-      align-items: center;
+      place-items: center;
+      background: var(--gradient-main);
+      color: white;
+      font-weight: 1000;
+      letter-spacing: -0.04em;
     }
 
-    .badge-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 16px;
+    .brand-title {
+      font-size: 18px;
+      font-weight: 1000;
+      letter-spacing: -0.035em;
     }
 
-    .badge {
+    .brand-subtitle {
+      margin-top: 3px;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .hero-copy {
+      position: relative;
+      z-index: 1;
+      max-width: 720px;
+    }
+
+    .security-badge {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      min-height: 30px;
-      padding: 0 11px;
+      min-height: 32px;
+      padding: 0 12px;
       border-radius: 999px;
-      background: var(--bg-card);
+      background: rgba(20, 184, 166, 0.12);
+      color: var(--primary-strong);
       border: 1px solid var(--border-soft);
-      color: var(--text-soft);
       font-size: 12px;
-      font-weight: 900;
+      font-weight: 950;
+      margin-bottom: 18px;
     }
 
     .hero-title {
-      max-width: 880px;
-      font-size: clamp(32px, 4.4vw, 62px);
-      line-height: 0.98;
-      letter-spacing: -0.065em;
+      font-size: clamp(38px, 5vw, 72px);
+      line-height: 0.94;
+      letter-spacing: -0.075em;
       font-weight: 1000;
     }
 
@@ -579,1776 +185,526 @@
       color: transparent;
     }
 
-    .hero-description {
-      max-width: 780px;
-      margin-top: 18px;
+    .hero-desc {
+      margin-top: 20px;
       color: var(--text-muted);
       font-size: 16px;
       line-height: 1.75;
       font-weight: 650;
+      max-width: 680px;
     }
 
-    .hero-actions {
-      margin-top: 24px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    .secondary-btn {
-      min-height: 44px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 9px;
-      border-radius: 999px;
-      padding: 0 18px;
-      background: var(--bg-card);
-      color: var(--text-main);
-      border: 1px solid var(--border-soft);
-      font-size: 14px;
-      font-weight: 900;
-      transition:
-        transform var(--transition-fast),
-        background var(--transition-fast),
-        border var(--transition-fast);
-    }
-
-    .secondary-btn:hover {
-      transform: translateY(-1px);
-      background: var(--bg-hover);
-      border-color: var(--border-strong);
-    }
-
-    .hero-panel {
-      border-radius: var(--radius-lg);
-      border: 1px solid var(--border-soft);
-      background: var(--bg-card);
-      padding: 18px;
-      box-shadow: var(--shadow-sm);
-    }
-
-    .hero-panel-title {
-      font-size: 14px;
-      font-weight: 950;
-      margin-bottom: 14px;
-    }
-
-    .health-list {
+    .security-list {
+      position: relative;
+      z-index: 1;
       display: grid;
       gap: 12px;
+      margin-top: 30px;
     }
 
-    .health-item {
+    .security-item {
       display: flex;
       align-items: center;
-      justify-content: space-between;
       gap: 12px;
-      padding: 12px;
-      border-radius: 16px;
-      background: var(--bg-hover);
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.045);
       border: 1px solid var(--border-soft);
-    }
-
-    .health-label {
       color: var(--text-soft);
       font-size: 13px;
-      font-weight: 850;
+      font-weight: 800;
     }
 
-    .health-value {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      color: var(--success);
-      font-size: 12px;
-      font-weight: 950;
-    }
-
-    .dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: currentColor;
-      box-shadow: 0 0 0 4px rgba(24, 185, 129, 0.14);
-    }
-
-    /* =========================================================
-       STATS
-       ========================================================= */
-
-    .stats-grid {
-      margin-top: 22px;
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 16px;
-    }
-
-    .stat-card {
-      position: relative;
-      overflow: hidden;
-      border-radius: var(--radius-lg);
-      padding: 20px;
-      background: var(--bg-card);
-      border: 1px solid var(--border-soft);
-      box-shadow: var(--shadow-sm);
-      transition:
-        transform var(--transition-normal),
-        box-shadow var(--transition-normal),
-        border var(--transition-normal);
-    }
-
-    .stat-card:hover {
-      transform: translateY(-4px);
-      box-shadow: var(--shadow-md);
-      border-color: var(--border-strong);
-    }
-
-    .stat-card::after {
-      content: "";
-      position: absolute;
-      right: -42px;
-      top: -42px;
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      background: var(--primary-soft);
-      pointer-events: none;
-    }
-
-    .stat-top {
-      position: relative;
-      z-index: 1;
+    .login-card {
+      padding: 34px;
       display: flex;
-      align-items: center;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .login-top {
+      display: flex;
       justify-content: space-between;
-      gap: 12px;
+      gap: 16px;
+      align-items: flex-start;
+      margin-bottom: 28px;
     }
 
-    .stat-icon {
-      width: 46px;
-      height: 46px;
-      border-radius: 16px;
-      display: grid;
-      place-items: center;
-      background: var(--gradient-main);
-      color: white;
-      font-size: 20px;
-      box-shadow: 0 12px 26px rgba(20, 184, 166, 0.18);
-    }
-
-    .stat-trend {
-      color: var(--success);
+    .login-kicker {
+      color: var(--primary-strong);
       font-size: 12px;
       font-weight: 950;
-      padding: 5px 9px;
-      border-radius: 999px;
-      background: rgba(24, 185, 129, 0.12);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
     }
 
-    .stat-number {
-      position: relative;
-      z-index: 1;
-      margin-top: 18px;
+    .login-title {
+      margin-top: 8px;
       font-size: 32px;
       line-height: 1;
       font-weight: 1000;
       letter-spacing: -0.05em;
     }
 
-    .stat-label {
-      position: relative;
-      z-index: 1;
-      margin-top: 8px;
-      color: var(--text-muted);
-      font-size: 13px;
-      font-weight: 800;
-    }
-
-    /* =========================================================
-       SECTIONS
-       ========================================================= */
-
-    .section {
-      margin-top: 28px;
-    }
-
-    .section-header {
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: 18px;
-      margin-bottom: 16px;
-    }
-
-    .section-kicker {
-      color: var(--primary-strong);
-      font-size: 12px;
-      font-weight: 950;
-      text-transform: uppercase;
-      letter-spacing: 0.11em;
-    }
-
-    .section-title {
-      margin-top: 5px;
-      font-size: 24px;
-      font-weight: 1000;
-      letter-spacing: -0.04em;
-    }
-
-    .section-description {
-      margin-top: 7px;
+    .login-desc {
+      margin-top: 10px;
       color: var(--text-muted);
       font-size: 14px;
       line-height: 1.65;
       font-weight: 650;
-      max-width: 820px;
     }
 
-    .section-tools {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-    }
-
-    .filter-pill {
-      min-height: 38px;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      border-radius: 999px;
-      padding: 0 13px;
-      background: var(--bg-card);
-      border: 1px solid var(--border-soft);
-      color: var(--text-soft);
-      font-size: 13px;
-      font-weight: 850;
-    }
-
-    .action-grid {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 16px;
-    }
-
-    .action-card {
-      position: relative;
-      overflow: hidden;
-      min-height: 178px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      border-radius: var(--radius-lg);
-      padding: 18px;
-      background: var(--bg-card);
-      border: 1px solid var(--border-soft);
-      box-shadow: var(--shadow-sm);
-      transition:
-        transform var(--transition-normal),
-        box-shadow var(--transition-normal),
-        border var(--transition-normal),
-        background var(--transition-normal);
-    }
-
-    .action-card:hover {
-      transform: translateY(-5px);
-      box-shadow: var(--shadow-md);
-      border-color: var(--border-strong);
-      background: var(--gradient-card), var(--bg-card);
-    }
-
-    .action-card::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background:
-        radial-gradient(circle at top right, rgba(20, 184, 166, 0.16), transparent 32%),
-        radial-gradient(circle at bottom left, rgba(99, 102, 241, 0.12), transparent 30%);
-      opacity: 0;
-      transition: opacity var(--transition-normal);
-      pointer-events: none;
-    }
-
-    .action-card:hover::before {
-      opacity: 1;
-    }
-
-    .action-top,
-    .action-bottom {
-      position: relative;
-      z-index: 1;
-    }
-
-    .action-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 17px;
-      display: grid;
-      place-items: center;
-      background: var(--primary-soft);
-      color: var(--primary-strong);
-      font-size: 22px;
-      margin-bottom: 14px;
-    }
-
-    .action-title {
-      font-size: 16px;
-      font-weight: 950;
-      letter-spacing: -0.02em;
-    }
-
-    .action-desc {
-      margin-top: 8px;
-      color: var(--text-muted);
-      font-size: 13px;
-      line-height: 1.55;
-      font-weight: 650;
-    }
-
-    .action-bottom {
-      margin-top: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    .action-meta {
-      color: var(--text-muted);
-      font-size: 12px;
-      font-weight: 850;
-    }
-
-    .open-link {
-      width: 38px;
-      height: 38px;
-      border-radius: 13px;
-      display: grid;
-      place-items: center;
-      background: var(--bg-hover);
-      border: 1px solid var(--border-soft);
-      color: var(--text-main);
-      transition: transform var(--transition-fast), background var(--transition-fast);
-    }
-
-    .action-card:hover .open-link {
-      background: var(--primary);
-      color: white;
-      transform: translateX(2px);
-    }
-
-    /* =========================================================
-       TWO COLUMN AREA
-       ========================================================= */
-
-    .dashboard-columns {
-      margin-top: 28px;
-      display: grid;
-      grid-template-columns: minmax(0, 1.15fr) minmax(340px, 0.85fr);
-      gap: 18px;
-    }
-
-    .panel {
-      border-radius: var(--radius-lg);
-      background: var(--bg-card);
-      border: 1px solid var(--border-soft);
-      box-shadow: var(--shadow-sm);
-      overflow: hidden;
-    }
-
-    .panel-header {
-      padding: 18px 20px;
-      border-bottom: 1px solid var(--border-soft);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 14px;
-    }
-
-    .panel-title {
-      font-size: 16px;
-      font-weight: 950;
-      letter-spacing: -0.02em;
-    }
-
-    .panel-subtitle {
-      margin-top: 3px;
-      color: var(--text-muted);
-      font-size: 12px;
-      font-weight: 750;
-    }
-
-    .panel-body {
-      padding: 18px 20px 20px;
-    }
-
-    .table-wrap {
-      overflow-x: auto;
-    }
-
-    .admin-table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 760px;
-    }
-
-    .admin-table th,
-    .admin-table td {
-      padding: 14px 12px;
-      text-align: left;
-      border-bottom: 1px solid var(--border-soft);
-      font-size: 13px;
-    }
-
-    .admin-table th {
-      color: var(--text-muted);
-      font-size: 11px;
-      font-weight: 950;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-
-    .admin-table td {
-      color: var(--text-soft);
-      font-weight: 760;
-    }
-
-    .admin-table tr:last-child td {
-      border-bottom: 0;
-    }
-
-    .status-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      border-radius: 999px;
-      padding: 6px 10px;
-      font-size: 12px;
-      font-weight: 950;
-    }
-
-    .status-active {
-      color: var(--success);
-      background: rgba(24, 185, 129, 0.12);
-    }
-
-    .status-review {
-      color: var(--warning);
-      background: rgba(245, 158, 11, 0.12);
-    }
-
-    .status-danger {
-      color: var(--danger);
-      background: rgba(239, 68, 68, 0.12);
-    }
-
-    .quick-list {
-      display: grid;
-      gap: 12px;
-    }
-
-    .quick-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 13px;
-      border-radius: 16px;
-      background: var(--bg-hover);
-      border: 1px solid var(--border-soft);
-    }
-
-    .quick-left {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      min-width: 0;
-    }
-
-    .quick-icon {
-      width: 38px;
-      height: 38px;
+    .theme-btn {
+      width: 44px;
+      height: 44px;
       border-radius: 14px;
       display: grid;
       place-items: center;
-      background: var(--primary-soft);
-      color: var(--primary-strong);
+      border: 1px solid var(--border-soft);
+      background: transparent;
+      color: var(--text-main);
       flex: 0 0 auto;
     }
 
-    .quick-title {
-      font-size: 13px;
-      font-weight: 950;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .quick-desc {
-      margin-top: 2px;
-      color: var(--text-muted);
-      font-size: 12px;
-      font-weight: 700;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .quick-link {
-      min-width: 34px;
-      height: 34px;
-      border-radius: 12px;
+    .form {
       display: grid;
-      place-items: center;
-      background: var(--bg-card);
-      border: 1px solid var(--border-soft);
-      color: var(--text-main);
-      transition: background var(--transition-fast), transform var(--transition-fast);
-    }
-
-    .quick-link:hover {
-      background: var(--primary);
-      color: white;
-      transform: translateX(2px);
-    }
-
-    /* =========================================================
-       SETTINGS
-       ========================================================= */
-
-    .settings-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 16px;
     }
 
-    .setting-card {
-      border-radius: var(--radius-lg);
-      padding: 18px;
-      background: var(--bg-card);
-      border: 1px solid var(--border-soft);
-      box-shadow: var(--shadow-sm);
-    }
-
-    .setting-title {
-      font-size: 15px;
-      font-weight: 950;
-      letter-spacing: -0.02em;
-    }
-
-    .setting-desc {
-      margin-top: 8px;
-      color: var(--text-muted);
-      font-size: 13px;
-      line-height: 1.55;
-      font-weight: 650;
-    }
-
-    .setting-actions {
-      margin-top: 16px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    .mini-btn {
-      min-height: 36px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
+    .field {
+      display: grid;
       gap: 8px;
-      border-radius: 999px;
-      padding: 0 13px;
-      background: var(--bg-hover);
-      border: 1px solid var(--border-soft);
-      color: var(--text-main);
-      font-size: 12px;
-      font-weight: 900;
-      transition: background var(--transition-fast), transform var(--transition-fast);
     }
 
-    .mini-btn:hover {
-      background: var(--primary);
-      color: white;
-      transform: translateY(-1px);
-    }
-
-    /* =========================================================
-       FOOTER
-       ========================================================= */
-
-    .footer {
-      margin-top: 28px;
-      padding: 22px;
-      border-radius: var(--radius-lg);
-      background: var(--bg-card);
-      border: 1px solid var(--border-soft);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      color: var(--text-muted);
+    .field label {
+      color: var(--text-soft);
       font-size: 13px;
-      font-weight: 750;
+      font-weight: 900;
     }
 
-    .footer strong {
+    .input-wrap {
+      position: relative;
+    }
+
+    .input-wrap input {
+      width: 100%;
+      height: 52px;
+      border-radius: 16px;
+      border: 1px solid var(--border-soft);
+      background: var(--bg-input);
       color: var(--text-main);
+      outline: none;
+      padding: 0 48px 0 16px;
+      font-weight: 750;
+      transition: border var(--transition-fast), box-shadow var(--transition-fast);
     }
 
-    /* =========================================================
-       MOBILE OVERLAY
-       ========================================================= */
-
-    .sidebar-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(2, 6, 23, 0.62);
-      backdrop-filter: blur(4px);
-      z-index: 45;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity var(--transition-normal);
+    .input-wrap input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.12);
     }
 
-    body.sidebar-open .sidebar-overlay {
-      opacity: 1;
-      pointer-events: auto;
+    .input-icon {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
     }
 
-    /* =========================================================
-       RESPONSIVE
-       ========================================================= */
-
-    @media (max-width: 1320px) {
-      .action-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-      }
-
-      .stats-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
-      .settings-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
+    .submit-btn {
+      height: 52px;
+      border-radius: 999px;
+      background: var(--gradient-main);
+      color: white;
+      font-size: 15px;
+      font-weight: 1000;
+      box-shadow: 0 18px 40px rgba(20, 184, 166, 0.22);
+      transition: transform var(--transition-fast), filter var(--transition-fast);
     }
 
-    @media (max-width: 1080px) {
-      .app-shell {
+    .submit-btn:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.05);
+    }
+
+    .submit-btn:disabled {
+      cursor: not-allowed;
+      opacity: 0.68;
+      transform: none;
+      filter: none;
+    }
+
+    .message {
+      min-height: 46px;
+      display: none;
+      align-items: center;
+      padding: 12px 14px;
+      border-radius: 16px;
+      font-size: 13px;
+      font-weight: 850;
+      line-height: 1.45;
+      border: 1px solid var(--border-soft);
+    }
+
+    .message.show {
+      display: flex;
+    }
+
+    .message.error {
+      color: var(--danger);
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    .message.success {
+      color: var(--success);
+      background: rgba(24, 185, 129, 0.1);
+    }
+
+    .secure-note {
+      margin-top: 18px;
+      color: var(--text-muted);
+      font-size: 12px;
+      line-height: 1.6;
+      font-weight: 700;
+    }
+
+    .dashboard-mount {
+      width: 100%;
+      min-height: 100vh;
+      display: none;
+    }
+
+    .dashboard-mount.active {
+      display: block;
+    }
+
+    body.dashboard-loaded {
+      display: block;
+      padding: 0;
+    }
+
+    body.dashboard-loaded .login-shell {
+      display: none;
+    }
+
+    body.dashboard-loaded .dashboard-mount {
+      display: block;
+    }
+
+    @media (max-width: 920px) {
+      .login-shell {
         grid-template-columns: 1fr;
       }
 
-      .sidebar {
-        position: fixed;
-        left: 0;
-        top: 0;
-        transform: translateX(-105%);
-        width: min(var(--sidebar-width), 88vw);
-        box-shadow: var(--shadow-lg);
-      }
-
-      body.sidebar-open .sidebar {
-        transform: translateX(0);
-      }
-
-      .menu-toggle {
-        display: grid;
-      }
-
-      .hero-inner {
-        grid-template-columns: 1fr;
-      }
-
-      .dashboard-columns {
-        grid-template-columns: 1fr;
-      }
-
-      .search-box {
-        width: min(300px, 38vw);
-      }
-    }
-
-    @media (max-width: 820px) {
-      .topbar {
-        padding: 0 16px;
-      }
-
-      .content {
-        padding: 18px 14px 24px;
-      }
-
-      .hero {
-        padding: 22px;
-      }
-
-      .topbar-actions .primary-btn {
-        display: none;
-      }
-
-      .search-box {
-        display: none;
-      }
-
-      .action-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
-      .section-header {
-        align-items: flex-start;
-        flex-direction: column;
-      }
-
-      .section-tools {
-        justify-content: flex-start;
-      }
-
-      .footer {
-        align-items: flex-start;
-        flex-direction: column;
+      .brand-panel {
+        min-height: auto;
       }
     }
 
     @media (max-width: 560px) {
-      .stats-grid,
-      .action-grid,
-      .settings-grid {
-        grid-template-columns: 1fr;
+      body {
+        padding: 14px;
+      }
+
+      .brand-panel,
+      .login-card {
+        border-radius: 24px;
+        padding: 24px;
       }
 
       .hero-title {
-        font-size: 34px;
+        font-size: 38px;
       }
 
-      .hero-actions {
-        flex-direction: column;
-      }
-
-      .primary-btn,
-      .secondary-btn {
-        width: 100%;
-      }
-
-      .topbar-actions .icon-btn {
-        display: none;
-      }
-
-      .page-title {
-        font-size: 17px;
-      }
-
-      .badge-row {
-        gap: 8px;
-      }
-
-      .badge {
-        font-size: 11px;
+      .login-title {
+        font-size: 28px;
       }
     }
   </style>
 </head>
 
 <body>
-  <div class="sidebar-overlay" id="sidebarOverlay"></div>
-
-  <div class="app-shell">
-    <!-- =======================================================
-         SIDEBAR
-         ======================================================= -->
-    <aside class="sidebar" id="sidebar">
-      <div class="brand">
+  <main class="login-shell">
+    <section class="brand-panel">
+      <div class="brand-logo-row">
         <div class="brand-logo">AF</div>
-        <div class="brand-copy">
+        <div>
           <div class="brand-title">AcademeForge</div>
-          <div class="brand-subtitle">Admin Command Center</div>
+          <div class="brand-subtitle">Protected Admin Access</div>
         </div>
       </div>
 
-      <div class="sidebar-scroll">
-        <nav class="nav-group">
-          <div class="nav-label">Core</div>
-          <div class="nav-list">
-            <a href="#" class="nav-link active">
-              <span class="nav-icon">🏠</span>
-              <span class="nav-text">Dashboard Overview</span>
-            </a>
-            <a href="#" class="nav-link">
-              <span class="nav-icon">👥</span>
-              <span class="nav-text">Students Management</span>
-            </a>
-            <a href="#" class="nav-link">
-              <span class="nav-icon">🎓</span>
-              <span class="nav-text">Courses & Learning</span>
-            </a>
-            <a href="#" class="nav-link">
-              <span class="nav-icon">📚</span>
-              <span class="nav-text">Lectures & Chapters</span>
-            </a>
-            <a href="#" class="nav-link">
-              <span class="nav-icon">🧪</span>
-              <span class="nav-text">Tests & Questions</span>
-            </a>
-          </div>
-        </nav>
+      <div class="hero-copy">
+        <div class="security-badge">● Backend protected dashboard</div>
+        <h1 class="hero-title">
+          Admin panel is <span class="gradient-text">not stored</span> in public frontend code.
+        </h1>
+        <p class="hero-desc">
+          Login verifies your Admin ID and password through Supabase Edge Functions. The dashboard HTML loads only after a valid backend session check.
+        </p>
 
-        <nav class="nav-group">
-          <div class="nav-label">Operations</div>
-          <div class="nav-list">
-            <a href="#" class="nav-link">
-              <span class="nav-icon">💳</span>
-              <span class="nav-text">Batch Payments</span>
-            </a>
-            <a href="#" class="nav-link">
-              <span class="nav-icon">🔐</span>
-              <span class="nav-text">Batch Access</span>
-            </a>
-            <a href="#" class="nav-link">
-              <span class="nav-icon">📲</span>
-              <span class="nav-text">APK Downloads</span>
-            </a>
-            <a href="#" class="nav-link">
-              <span class="nav-icon">🔔</span>
-              <span class="nav-text">App Notifications</span>
-            </a>
-            <a href="#" class="nav-link">
-              <span class="nav-icon">🌐</span>
-              <span class="nav-text">Translations</span>
-            </a>
-          </div>
-        </nav>
-
-        <nav class="nav-group">
-          <div class="nav-label">Community</div>
-          <div class="nav-list">
-            <a href="#" class="nav-link">
-              <span class="nav-icon">📰</span>
-              <span class="nav-text">Nexus Posts</span>
-            </a>
-            <a href="#" class="nav-link">
-              <span class="nav-icon">💬</span>
-              <span class="nav-text">Nexus Comments</span>
-            </a>
-            <a href="#" class="nav-link">
-              <span class="nav-icon">❤️</span>
-              <span class="nav-text">Post Likes</span>
-            </a>
-            <a href="#" class="nav-link">
-              <span class="nav-icon">🧑‍💼</span>
-              <span class="nav-text">Join Team Applications</span>
-            </a>
-            <a href="#" class="nav-link">
-              <span class="nav-icon">🐞</span>
-              <span class="nav-text">Bug Reports</span>
-            </a>
-          </div>
-        </nav>
-
-        <nav class="nav-group">
-          <div class="nav-label">System</div>
-          <div class="nav-list">
-            <a href="#" class="nav-link">
-              <span class="nav-icon">🗑️</span>
-              <span class="nav-text">Deleted Accounts</span>
-            </a>
-            <a href="#" class="nav-link">
-              <span class="nav-icon">🧾</span>
-              <span class="nav-text">Account Delete Requests</span>
-            </a>
-            <a href="#" class="nav-link">
-              <span class="nav-icon">⚙️</span>
-              <span class="nav-text">Admin Settings</span>
-            </a>
-          </div>
-        </nav>
-      </div>
-
-      <div class="sidebar-footer">
-        <div class="admin-mini-card">
-          <div class="admin-avatar">DK</div>
-          <div class="admin-info">
-            <div class="admin-name">Devraj Kumar</div>
-            <div class="admin-role">Super Admin</div>
-          </div>
+        <div class="security-list">
+          <div class="security-item">🔐 No service role key in frontend</div>
+          <div class="security-item">🛡️ Dashboard code loads from backend only</div>
+          <div class="security-item">🚫 Login bypass cannot reveal panel content</div>
         </div>
       </div>
-    </aside>
+    </section>
 
-    <!-- =======================================================
-         MAIN
-         ======================================================= -->
-    <main class="main">
-      <header class="topbar">
-        <div class="topbar-left">
-          <button class="menu-toggle" id="menuToggle" aria-label="Open navigation">
-            ☰
-          </button>
+    <section class="login-card">
+      <div class="login-top">
+        <div>
+          <div class="login-kicker">Admin Login</div>
+          <h2 class="login-title">Sign in securely</h2>
+          <p class="login-desc">
+            Enter your Admin ID and password to load the protected command center.
+          </p>
+        </div>
 
-          <div>
-            <div class="page-kicker">Production Admin</div>
-            <h1 class="page-title">AcademeForge Control Panel</h1>
+        <button class="theme-btn" id="themeBtn" type="button" aria-label="Toggle theme">🌙</button>
+      </div>
+
+      <form class="form" id="loginForm" autocomplete="off">
+        <div class="field">
+          <label for="adminId">Admin ID</label>
+          <div class="input-wrap">
+            <input id="adminId" name="admin_id" type="text" placeholder="Enter admin ID" autocomplete="username" required />
+            <span class="input-icon">👤</span>
           </div>
         </div>
 
-        <div class="topbar-actions">
-          <label class="search-box" aria-label="Search dashboard">
-            <span class="search-icon">⌕</span>
-            <input id="dashboardSearch" type="search" placeholder="Search modules, users, courses..." autocomplete="off" />
-            <span class="shortcut">Ctrl K</span>
-          </label>
-
-          <a href="#" class="icon-btn" title="Notifications">🔔</a>
-          <a href="#" class="icon-btn" title="Security">🛡️</a>
-
-          <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-            🌙
-          </button>
-
-          <a href="#" class="primary-btn">
-            <span>＋</span>
-            <span>New Action</span>
-          </a>
+        <div class="field">
+          <label for="password">Password</label>
+          <div class="input-wrap">
+            <input id="password" name="password" type="password" placeholder="Enter password" autocomplete="current-password" required />
+            <span class="input-icon">🔒</span>
+          </div>
         </div>
-      </header>
 
-      <section class="content">
-        <!-- ===================================================
-             HERO
-             =================================================== -->
-        <section class="hero">
-          <div class="hero-inner">
-            <div>
-              <div class="badge-row">
-                <span class="badge">● Live Production</span>
-                <span class="badge">RLS Enabled</span>
-                <span class="badge">EdTech Admin Suite</span>
-              </div>
+        <button class="submit-btn" id="submitBtn" type="submit">Login & Load Dashboard</button>
 
-              <h2 class="hero-title">
-                Manage the complete <span class="gradient-text">AcademeForge</span> platform from one professional panel.
-              </h2>
+        <div class="message" id="messageBox"></div>
+      </form>
 
-              <p class="hero-description">
-                Centralized admin dashboard for students, courses, lectures, chapters, tests, payments, access control,
-                notifications, community posts, bug reports, team applications, translations, and system-level operations.
-              </p>
+      <p class="secure-note">
+        This page contains only the login UI. The actual dashboard is fetched from the backend after session verification.
+      </p>
+    </section>
+  </main>
 
-              <div class="hero-actions">
-                <a href="#" class="primary-btn">Open Student Manager</a>
-                <a href="#" class="secondary-btn">Review Applications</a>
-                <a href="#" class="secondary-btn">System Settings</a>
-              </div>
-            </div>
-
-            <aside class="hero-panel">
-              <div class="hero-panel-title">Platform Health</div>
-
-              <div class="health-list">
-                <div class="health-item">
-                  <span class="health-label">Database Status</span>
-                  <span class="health-value"><span class="dot"></span> Operational</span>
-                </div>
-
-                <div class="health-item">
-                  <span class="health-label">Auth Service</span>
-                  <span class="health-value"><span class="dot"></span> Active</span>
-                </div>
-
-                <div class="health-item">
-                  <span class="health-label">Student Portal</span>
-                  <span class="health-value"><span class="dot"></span> Online</span>
-                </div>
-
-                <div class="health-item">
-                  <span class="health-label">Admin Security</span>
-                  <span class="health-value"><span class="dot"></span> Protected</span>
-                </div>
-              </div>
-            </aside>
-          </div>
-        </section>
-
-        <!-- ===================================================
-             STATS
-             =================================================== -->
-        <section class="stats-grid">
-          <article class="stat-card">
-            <div class="stat-top">
-              <div class="stat-icon">👥</div>
-              <div class="stat-trend">+12%</div>
-            </div>
-            <div class="stat-number">6</div>
-            <div class="stat-label">Registered Students</div>
-          </article>
-
-          <article class="stat-card">
-            <div class="stat-top">
-              <div class="stat-icon">🎓</div>
-              <div class="stat-trend">Active</div>
-            </div>
-            <div class="stat-number">24</div>
-            <div class="stat-label">Learning Modules</div>
-          </article>
-
-          <article class="stat-card">
-            <div class="stat-top">
-              <div class="stat-icon">🧪</div>
-              <div class="stat-trend">Ready</div>
-            </div>
-            <div class="stat-number">128</div>
-            <div class="stat-label">Tests & Questions</div>
-          </article>
-
-          <article class="stat-card">
-            <div class="stat-top">
-              <div class="stat-icon">🔐</div>
-              <div class="stat-trend">Secure</div>
-            </div>
-            <div class="stat-number">4</div>
-            <div class="stat-label">RLS Policies</div>
-          </article>
-        </section>
-
-        <!-- ===================================================
-             CORE ACTIONS
-             =================================================== -->
-        <section class="section" id="coreActions">
-          <div class="section-header">
-            <div>
-              <div class="section-kicker">Admin Actions</div>
-              <h2 class="section-title">Core Management</h2>
-              <p class="section-description">
-                Main operational modules for managing users, content, access, academic resources, and student activity.
-              </p>
-            </div>
-
-            <div class="section-tools">
-              <span class="filter-pill">All Modules</span>
-              <span class="filter-pill">Production</span>
-            </div>
-          </div>
-
-          <div class="action-grid" data-search-area>
-            <a href="#" class="action-card" data-search-item="students users mobile password email status student id">
-              <div class="action-top">
-                <div class="action-icon">👥</div>
-                <h3 class="action-title">Students Manager</h3>
-                <p class="action-desc">Manage student profiles, login details, status, email verification, and student IDs.</p>
-              </div>
-              <div class="action-bottom">
-                <span class="action-meta">students_af</span>
-                <span class="open-link">→</span>
-              </div>
-            </a>
-
-            <a href="#" class="action-card" data-search-item="courses subjects classes learning modules">
-              <div class="action-top">
-                <div class="action-icon">🎓</div>
-                <h3 class="action-title">Courses</h3>
-                <p class="action-desc">Create, organize, and manage all courses available inside the learning platform.</p>
-              </div>
-              <div class="action-bottom">
-                <span class="action-meta">courses</span>
-                <span class="open-link">→</span>
-              </div>
-            </a>
-
-            <a href="#" class="action-card" data-search-item="lectures videos classes lessons">
-              <div class="action-top">
-                <div class="action-icon">🎥</div>
-                <h3 class="action-title">Lectures</h3>
-                <p class="action-desc">Control lecture content, video lessons, class resources, and published learning units.</p>
-              </div>
-              <div class="action-bottom">
-                <span class="action-meta">lectures</span>
-                <span class="open-link">→</span>
-              </div>
-            </a>
-
-            <a href="#" class="action-card" data-search-item="chapters units topics course chapters">
-              <div class="action-top">
-                <div class="action-icon">📚</div>
-                <h3 class="action-title">Chapters</h3>
-                <p class="action-desc">Manage chapter-wise structure, topic ordering, and course content hierarchy.</p>
-              </div>
-              <div class="action-bottom">
-                <span class="action-meta">chapters</span>
-                <span class="open-link">→</span>
-              </div>
-            </a>
-
-            <a href="#" class="action-card" data-search-item="tests exams quizzes assessments">
-              <div class="action-top">
-                <div class="action-icon">🧪</div>
-                <h3 class="action-title">Tests</h3>
-                <p class="action-desc">Create and maintain test sets, quizzes, assessments, and exam structures.</p>
-              </div>
-              <div class="action-bottom">
-                <span class="action-meta">af_tests</span>
-                <span class="open-link">→</span>
-              </div>
-            </a>
-
-            <a href="#" class="action-card" data-search-item="questions answers mcq test questions">
-              <div class="action-top">
-                <div class="action-icon">❓</div>
-                <h3 class="action-title">Test Questions</h3>
-                <p class="action-desc">Manage question banks, answer options, explanations, and test mapping.</p>
-              </div>
-              <div class="action-bottom">
-                <span class="action-meta">af_test_questions</span>
-                <span class="open-link">→</span>
-              </div>
-            </a>
-
-            <a href="#" class="action-card" data-search-item="answers submissions attempts scores">
-              <div class="action-top">
-                <div class="action-icon">📝</div>
-                <h3 class="action-title">Student Answers</h3>
-                <p class="action-desc">Review submitted answers, attempts, scoring activity, and student performance logs.</p>
-              </div>
-              <div class="action-bottom">
-                <span class="action-meta">af_test_answers</span>
-                <span class="open-link">→</span>
-              </div>
-            </a>
-
-            <a href="#" class="action-card" data-search-item="attempts exam attempts student attempts">
-              <div class="action-top">
-                <div class="action-icon">📊</div>
-                <h3 class="action-title">Test Attempts</h3>
-                <p class="action-desc">Track attempts, completion states, scores, progress, and test analytics.</p>
-              </div>
-              <div class="action-bottom">
-                <span class="action-meta">af_test_attempts</span>
-                <span class="open-link">→</span>
-              </div>
-            </a>
-          </div>
-        </section>
-
-        <!-- ===================================================
-             ACCESS + APP OPERATIONS
-             =================================================== -->
-        <section class="section">
-          <div class="section-header">
-            <div>
-              <div class="section-kicker">Access & Operations</div>
-              <h2 class="section-title">Platform Control</h2>
-              <p class="section-description">
-                Manage paid access, batch permissions, downloads, notifications, translations, and student activity tracking.
-              </p>
-            </div>
-          </div>
-
-          <div class="action-grid" data-search-area>
-            <a href="#" class="action-card" data-search-item="batch access student access full access course access">
-              <div class="action-top">
-                <div class="action-icon">🔐</div>
-                <h3 class="action-title">Batch Access</h3>
-                <p class="action-desc">Grant or revoke batch-level access for students and learning groups.</p>
-              </div>
-              <div class="action-bottom">
-                <span class="action-meta">batch_access</span>
-                <span class="open-link">→</span>
-              </div>
-            </a>
-
-            <a href="#" class="action-card" data-search-item="student full access permissions premium access">
-              <div class="action-top">
-                <div class="action-icon">🛡️</div>
-                <h3 class="action-title">Full Access Control</h3>
-                <p class="action-desc">Control complete student access permissions across premium platform resources.</p>
-              </div>
-              <div class="action-bottom">
-                <span class="action-meta">student_full_access_af</span>
-                <span class="open-link">→</span>
-              </div>
-            </a>
-
-            <a href="#" class="action-card" data-search-item="student courses enrollment assigned courses">
-              <div class="action-top">
-                <div class="action-icon">📌</div>
-                <h3 class="action-title">Student Courses</h3>
-                <p class="action-desc">Map students to enrolled courses and manage assigned learning paths.</p>
-              </div>
-              <div class="action-bottom">
-                <span class="action-meta">student_courses</span>
-                <span class="open-link">→</span>
-              </div>
-            </a>
-
-            <a href="#" class="action-card" data-search-item="payments batch payments transactions fees">
-              <div class="action-top">
-                <div class="action-icon">💳</div>
-                <h3 class="action-title">Batch Payments</h3>
-                <p class="action-desc">Review payment records, batch transactions, fees, and student purchase activity.</p>
-              </div>
-              <div class="action-bottom">
-                <span class="action-meta">batch_payments_af</span>
-                <span class="open-link">→</span>
-              </div>
-            </a>
-
-            <a href="#" class="action-card" data-search-item="apk downloads app downloads mobile app">
-              <div class="action-top">
-                <div class="action-icon">📲</div>
-                <h3 class="action-title">APK Downloads</h3>
-                <p class="action-desc">Manage Android app download entries, app versions, and release links.</p>
-              </div>
-              <div class="action-bottom">
-                <span class="action-meta">apk_downloads</span>
-                <span class="open-link">→</span>
-              </div>
-            </a>
-
-            <a href="#" class="action-card" data-search-item="notifications push app notifications alerts">
-              <div class="action-top">
-                <div class="action-icon">🔔</div>
-                <h3 class="action-title">App Notifications</h3>
-                <p class="action-desc">Send announcements, platform updates, reminders, and app-level notifications.</p>
-              </div>
-              <div class="action-bottom">
-                <span class="action-meta">app_notifications</span>
-                <span class="open-link">→</span>
-              </div>
-            </a>
-
-            <a href="#" class="action-card" data-search-item="translations language app translations">
-              <div class="action-top">
-                <div class="action-icon">🌐</div>
-                <h3 class="action-title">App Translations</h3>
-                <p class="action-desc">Manage multilingual text, labels, and localized app content.</p>
-              </div>
-              <div class="action-bottom">
-                <span class="action-meta">app_translations</span>
-                <span class="open-link">→</span>
-              </div>
-            </a>
-
-            <a href="#" class="action-card" data-search-item="learning activity logs student activity">
-              <div class="action-top">
-                <div class="action-icon">📈</div>
-                <h3 class="action-title">Learning Activity</h3>
-                <p class="action-desc">Track student learning activity, progress signals, and platform engagement.</p>
-              </div>
-              <div class="action-bottom">
-                <span class="action-meta">learning_activity_af</span>
-                <span class="open-link">→</span>
-              </div>
-            </a>
-          </div>
-        </section>
-
-        <!-- ===================================================
-             COMMUNITY + SUPPORT
-             =================================================== -->
-        <section class="section">
-          <div class="section-header">
-            <div>
-              <div class="section-kicker">Community & Support</div>
-              <h2 class="section-title">Nexus, Feedback & Requests</h2>
-              <p class="section-description">
-                Moderate community content, review feedback, handle account requests, and process team applications.
-              </p>
-            </div>
-          </div>
-
-          <div class="action-grid" data-search-area>
-            <a href="#" class="action-card" data-search-item="nexus posts community feed social posts">
-              <div class="action-top">
-                <div class="action-icon">📰</div>
-                <h3 class="action-title">Nexus Posts</h3>
-                <p class="action-desc">Manage community posts, announcements, feed content, and moderation state.</p>
-              </div>
-              <div class="action-bottom">
-                <span class="action-meta">af_nexus_posts_v2</span>
-                <span class="open-link">→</span>
-              </div>
-            </a>
-
-            <a href="#" class="action-card" data-search-item="nexus comments community comments moderation">
-              <div class="action-top">
-                <div class="action-icon">💬</div>
-                <h3 class="action-title">Nexus Comments</h3>
-                <p class="action-desc">Moderate comments, replies, discussions, and user-generated conversations.</p>
-              </div>
-              <div class="action-bottom">
-                <span class="action-meta">af_nexus_comments_v2</span>
-                <span class="open-link">→</span>
-              </div>
-            </a>
-
-            <a href="#" class="action-card" data-search-item="post likes likes reactions engagement">
-              <div class="action-top">
-                <div class="action-icon">❤️</div>
-                <h3 class="action-title">Post Likes</h3>
-                <p class="action-desc">Track post reactions, engagement signals, and user interaction metrics.</p>
-              </div>
-              <div class="action-bottom">
-                <span class="action-meta">af_nexus_post_likes_v2</span>
-                <span class="open-link">→</span>
-              </div>
-            </a>
-
-            <a href="#" class="action-card" data-search-item="contact requests support messages">
-              <div class="action-top">
-                <div class="action-icon">📨</div>
-                <h3 class="action-title">Contact Requests</h3>
-                <p class="action-desc">Review support messages, user contact forms, and general inquiries.</p>
-              </div>
-              <div class="action-bottom">
-                <span class="action-meta">af_contact_requests</span>
-                <span class="open-link">→</span>
-              </div>
-            </a>
-
-            <a href="#" class="action-card" data-search-item="join team applications hiring contributors">
-              <div class="action-top">
-                <div class="action-icon">🧑‍💼</div>
-                <h3 class="action-title">Join Team Applications</h3>
-                <p class="action-desc">Review applicants, contributors, skill submissions, and team onboarding requests.</p>
-              </div>
-              <div class="action-bottom">
-                <span class="action-meta">join_team_applications</span>
-                <span class="open-link">→</span>
-              </div>
-            </a>
-
-            <a href="#" class="action-card" data-search-item="bug reports issues errors feedback">
-              <div class="action-top">
-                <div class="action-icon">🐞</div>
-                <h3 class="action-title">Bug Reports</h3>
-                <p class="action-desc">Track reported bugs, app issues, frontend errors, and user-submitted problems.</p>
-              </div>
-              <div class="action-bottom">
-                <span class="action-meta">bug_reports</span>
-                <span class="open-link">→</span>
-              </div>
-            </a>
-
-            <a href="#" class="action-card" data-search-item="account delete requests deletion privacy">
-              <div class="action-top">
-                <div class="action-icon">🧾</div>
-                <h3 class="action-title">Delete Requests</h3>
-                <p class="action-desc">Process account deletion requests, privacy actions, and user removal workflows.</p>
-              </div>
-              <div class="action-bottom">
-                <span class="action-meta">account_delete_requests</span>
-                <span class="open-link">→</span>
-              </div>
-            </a>
-
-            <a href="#" class="action-card" data-search-item="deleted accounts archive removed users">
-              <div class="action-top">
-                <div class="action-icon">🗑️</div>
-                <h3 class="action-title">Deleted Accounts</h3>
-                <p class="action-desc">View deleted account archives, removal records, and account lifecycle history.</p>
-              </div>
-              <div class="action-bottom">
-                <span class="action-meta">deleted_accounts_af</span>
-                <span class="open-link">→</span>
-              </div>
-            </a>
-          </div>
-        </section>
-
-        <!-- ===================================================
-             TABLE + QUICK ACTIONS
-             =================================================== -->
-        <section class="dashboard-columns">
-          <div class="panel">
-            <div class="panel-header">
-              <div>
-                <h2 class="panel-title">Recent Admin Activity</h2>
-                <p class="panel-subtitle">Operational snapshot for important modules</p>
-              </div>
-              <a href="#" class="mini-btn">View Logs</a>
-            </div>
-
-            <div class="panel-body">
-              <div class="table-wrap">
-                <table class="admin-table">
-                  <thead>
-                    <tr>
-                      <th>Module</th>
-                      <th>Action</th>
-                      <th>Status</th>
-                      <th>Owner</th>
-                      <th>Time</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>Students</td>
-                      <td>Student account verified</td>
-                      <td><span class="status-pill status-active">● Completed</span></td>
-                      <td>Admin</td>
-                      <td>2 min ago</td>
-                    </tr>
-                    <tr>
-                      <td>Payments</td>
-                      <td>Batch payment reviewed</td>
-                      <td><span class="status-pill status-review">● Review</span></td>
-                      <td>Finance</td>
-                      <td>12 min ago</td>
-                    </tr>
-                    <tr>
-                      <td>Nexus</td>
-                      <td>Community post moderated</td>
-                      <td><span class="status-pill status-active">● Approved</span></td>
-                      <td>Moderator</td>
-                      <td>28 min ago</td>
-                    </tr>
-                    <tr>
-                      <td>Bug Reports</td>
-                      <td>Frontend issue received</td>
-                      <td><span class="status-pill status-danger">● Pending</span></td>
-                      <td>Support</td>
-                      <td>41 min ago</td>
-                    </tr>
-                    <tr>
-                      <td>Courses</td>
-                      <td>Lecture content updated</td>
-                      <td><span class="status-pill status-active">● Published</span></td>
-                      <td>Academic</td>
-                      <td>1 hour ago</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-
-          <aside class="panel">
-            <div class="panel-header">
-              <div>
-                <h2 class="panel-title">Quick Actions</h2>
-                <p class="panel-subtitle">Fast access to frequent admin tasks</p>
-              </div>
-            </div>
-
-            <div class="panel-body">
-              <div class="quick-list">
-                <div class="quick-item">
-                  <div class="quick-left">
-                    <div class="quick-icon">＋</div>
-                    <div>
-                      <div class="quick-title">Add New Student</div>
-                      <div class="quick-desc">Create a new student profile</div>
-                    </div>
-                  </div>
-                  <a href="#" class="quick-link">→</a>
-                </div>
-
-                <div class="quick-item">
-                  <div class="quick-left">
-                    <div class="quick-icon">🔐</div>
-                    <div>
-                      <div class="quick-title">Grant Course Access</div>
-                      <div class="quick-desc">Assign access to a student</div>
-                    </div>
-                  </div>
-                  <a href="#" class="quick-link">→</a>
-                </div>
-
-                <div class="quick-item">
-                  <div class="quick-left">
-                    <div class="quick-icon">🔔</div>
-                    <div>
-                      <div class="quick-title">Send Notification</div>
-                      <div class="quick-desc">Push update to app users</div>
-                    </div>
-                  </div>
-                  <a href="#" class="quick-link">→</a>
-                </div>
-
-                <div class="quick-item">
-                  <div class="quick-left">
-                    <div class="quick-icon">🧪</div>
-                    <div>
-                      <div class="quick-title">Create Test</div>
-                      <div class="quick-desc">Add quiz or exam module</div>
-                    </div>
-                  </div>
-                  <a href="#" class="quick-link">→</a>
-                </div>
-
-                <div class="quick-item">
-                  <div class="quick-left">
-                    <div class="quick-icon">🐞</div>
-                    <div>
-                      <div class="quick-title">Review Bugs</div>
-                      <div class="quick-desc">Check latest issue reports</div>
-                    </div>
-                  </div>
-                  <a href="#" class="quick-link">→</a>
-                </div>
-              </div>
-            </div>
-          </aside>
-        </section>
-
-        <!-- ===================================================
-             SETTINGS
-             =================================================== -->
-        <section class="section">
-          <div class="section-header">
-            <div>
-              <div class="section-kicker">Settings</div>
-              <h2 class="section-title">Admin Configuration</h2>
-              <p class="section-description">
-                System-level settings for appearance, security, access policies, notifications, and admin workflow.
-              </p>
-            </div>
-          </div>
-
-          <div class="settings-grid">
-            <article class="setting-card">
-              <h3 class="setting-title">Appearance</h3>
-              <p class="setting-desc">Switch between light and dark dashboard modes with persistent local preference.</p>
-              <div class="setting-actions">
-                <button class="mini-btn" id="darkModeBtn">Dark Mode</button>
-                <button class="mini-btn" id="lightModeBtn">Light Mode</button>
-              </div>
-            </article>
-
-            <article class="setting-card">
-              <h3 class="setting-title">Security Policies</h3>
-              <p class="setting-desc">Manage admin-only access, role permissions, RLS-aware actions, and audit readiness.</p>
-              <div class="setting-actions">
-                <a href="#" class="mini-btn">Open Security</a>
-                <a href="#" class="mini-btn">Audit Logs</a>
-              </div>
-            </article>
-
-            <article class="setting-card">
-              <h3 class="setting-title">Notification Center</h3>
-              <p class="setting-desc">Configure platform announcements, app alerts, priority notices, and broadcast rules.</p>
-              <div class="setting-actions">
-                <a href="#" class="mini-btn">Create Alert</a>
-                <a href="#" class="mini-btn">Templates</a>
-              </div>
-            </article>
-
-            <article class="setting-card">
-              <h3 class="setting-title">Data Management</h3>
-              <p class="setting-desc">Central controls for tables, exports, moderation queues, and operational cleanup.</p>
-              <div class="setting-actions">
-                <a href="#" class="mini-btn">Export Data</a>
-                <a href="#" class="mini-btn">Clean Queue</a>
-              </div>
-            </article>
-
-            <article class="setting-card">
-              <h3 class="setting-title">Academic Workflow</h3>
-              <p class="setting-desc">Control content publishing, course visibility, lecture ordering, and test lifecycle.</p>
-              <div class="setting-actions">
-                <a href="#" class="mini-btn">Publish Queue</a>
-                <a href="#" class="mini-btn">Review Drafts</a>
-              </div>
-            </article>
-
-            <article class="setting-card">
-              <h3 class="setting-title">Team Operations</h3>
-              <p class="setting-desc">Manage team applications, support ownership, contributor review, and internal workflows.</p>
-              <div class="setting-actions">
-                <a href="#" class="mini-btn">Applicants</a>
-                <a href="#" class="mini-btn">Assign Tasks</a>
-              </div>
-            </article>
-          </div>
-        </section>
-
-        <footer class="footer">
-          <div>
-            <strong>AcademeForge Admin Panel</strong> — professional control dashboard preview.
-          </div>
-          <div>
-            Developed by <strong>Devraj Kumar</strong>
-          </div>
-        </footer>
-      </section>
-    </main>
-  </div>
+  <section class="dashboard-mount" id="dashboardMount"></section>
 
   <script>
-    /* =========================================================
-       ACADEMEFORGE ADMIN DASHBOARD SCRIPT
-       ========================================================= */
-
     (function () {
       "use strict";
 
+      const AUTH_ENDPOINT = "https://afooyyydhlwngzssgqih.supabase.co/functions/v1/admin-auth";
+      const DASHBOARD_ENDPOINT = "https://afooyyydhlwngzssgqih.supabase.co/functions/v1/admin-dashboard";
+
       const root = document.documentElement;
       const body = document.body;
+      const themeBtn = document.getElementById("themeBtn");
+      const loginForm = document.getElementById("loginForm");
+      const adminIdInput = document.getElementById("adminId");
+      const passwordInput = document.getElementById("password");
+      const submitBtn = document.getElementById("submitBtn");
+      const messageBox = document.getElementById("messageBox");
+      const dashboardMount = document.getElementById("dashboardMount");
 
-      const menuToggle = document.getElementById("menuToggle");
-      const sidebarOverlay = document.getElementById("sidebarOverlay");
-      const themeToggle = document.getElementById("themeToggle");
-      const darkModeBtn = document.getElementById("darkModeBtn");
-      const lightModeBtn = document.getElementById("lightModeBtn");
-      const dashboardSearch = document.getElementById("dashboardSearch");
+      const THEME_KEY = "academeforge-admin-login-theme";
+      const TOKEN_KEY = "af_admin_session_token";
+      const DEVICE_KEY = "af_admin_device_id";
 
-      const THEME_KEY = "academeforge-admin-theme";
+      function getDeviceId() {
+        let id = localStorage.getItem(DEVICE_KEY);
 
-      function getSystemTheme() {
-        if (window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches) {
-          return "light";
+        if (!id) {
+          id = "web_" + crypto.randomUUID();
+          localStorage.setItem(DEVICE_KEY, id);
         }
 
-        return "dark";
+        return id;
       }
 
-      function getSavedTheme() {
-        try {
-          const savedTheme = localStorage.getItem(THEME_KEY);
-
-          if (savedTheme === "light" || savedTheme === "dark") {
-            return savedTheme;
-          }
-
-          return null;
-        } catch (error) {
-          return null;
-        }
+      function setMessage(type, text) {
+        messageBox.className = "message show " + type;
+        messageBox.textContent = text;
       }
 
-      function saveTheme(theme) {
-        try {
-          localStorage.setItem(THEME_KEY, theme);
-        } catch (error) {
-          return false;
-        }
+      function clearMessage() {
+        messageBox.className = "message";
+        messageBox.textContent = "";
+      }
 
-        return true;
+      function setLoading(isLoading) {
+        submitBtn.disabled = isLoading;
+        submitBtn.textContent = isLoading ? "Verifying..." : "Login & Load Dashboard";
       }
 
       function applyTheme(theme) {
-        const normalizedTheme = theme === "light" ? "light" : "dark";
-        root.setAttribute("data-theme", normalizedTheme);
+        const normalized = theme === "light" ? "light" : "dark";
+        root.setAttribute("data-theme", normalized);
+        localStorage.setItem(THEME_KEY, normalized);
 
-        if (themeToggle) {
-          themeToggle.textContent = normalizedTheme === "dark" ? "🌙" : "☀️";
-          themeToggle.setAttribute(
-            "aria-label",
-            normalizedTheme === "dark" ? "Switch to light mode" : "Switch to dark mode"
-          );
+        if (themeBtn) {
+          themeBtn.textContent = normalized === "dark" ? "🌙" : "☀️";
+        }
+      }
+
+      function loadSavedTheme() {
+        const saved = localStorage.getItem(THEME_KEY);
+        applyTheme(saved === "light" || saved === "dark" ? saved : "dark");
+      }
+
+      async function loadDashboard(sessionToken, deviceId) {
+        const response = await fetch(DASHBOARD_ENDPOINT, {
+          method: "GET",
+          headers: {
+            "x-admin-token": sessionToken,
+            "x-device-id": deviceId
+          },
+          cache: "no-store"
+        });
+
+        const contentType = response.headers.get("content-type") || "";
+        const text = await response.text();
+
+        if (!response.ok) {
+          localStorage.removeItem(TOKEN_KEY);
+
+          let message = "Unable to load dashboard.";
+
+          if (contentType.includes("application/json")) {
+            try {
+              const parsed = JSON.parse(text);
+              message = parsed.message || message;
+            } catch (error) {
+              message = "Unable to load dashboard.";
+            }
+          }
+
+          throw new Error(message);
         }
 
-        saveTheme(normalizedTheme);
+        if (!contentType.includes("text/html")) {
+          throw new Error("Invalid dashboard response.");
+        }
+
+        dashboardMount.innerHTML = text;
+        body.classList.add("dashboard-loaded");
+        dashboardMount.classList.add("active");
+
+        const scripts = dashboardMount.querySelectorAll("script");
+
+        scripts.forEach(function (oldScript) {
+          const newScript = document.createElement("script");
+
+          Array.from(oldScript.attributes).forEach(function (attr) {
+            newScript.setAttribute(attr.name, attr.value);
+          });
+
+          newScript.textContent = oldScript.textContent;
+          oldScript.parentNode.replaceChild(newScript, oldScript);
+        });
       }
 
-      function toggleTheme() {
-        const currentTheme = root.getAttribute("data-theme") === "light" ? "light" : "dark";
-        const nextTheme = currentTheme === "light" ? "dark" : "light";
-        applyTheme(nextTheme);
+      async function login(adminId, password) {
+        const deviceId = getDeviceId();
+
+        const response = await fetch(AUTH_ENDPOINT, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            admin_id: adminId,
+            password: password,
+            device_id: deviceId,
+            device_name: navigator.userAgent
+          }),
+          cache: "no-store"
+        });
+
+        const data = await response.json().catch(function () {
+          return {
+            ok: false,
+            message: "Invalid server response."
+          };
+        });
+
+        if (!response.ok || !data.ok) {
+          throw new Error(data.message || "Admin login failed.");
+        }
+
+        if (!data.session_token) {
+          throw new Error("Session token missing.");
+        }
+
+        localStorage.setItem(TOKEN_KEY, data.session_token);
+        localStorage.setItem(DEVICE_KEY, data.device_id || deviceId);
+
+        return {
+          sessionToken: data.session_token,
+          deviceId: data.device_id || deviceId
+        };
       }
 
-      function openSidebar() {
-        body.classList.add("sidebar-open");
-      }
+      async function restoreSessionIfPossible() {
+        const token = localStorage.getItem(TOKEN_KEY);
+        const deviceId = localStorage.getItem(DEVICE_KEY);
 
-      function closeSidebar() {
-        body.classList.remove("sidebar-open");
-      }
-
-      function toggleSidebar() {
-        if (body.classList.contains("sidebar-open")) {
-          closeSidebar();
+        if (!token || !deviceId) {
           return;
         }
 
-        openSidebar();
+        try {
+          setMessage("success", "Restoring secure admin session...");
+          await loadDashboard(token, deviceId);
+        } catch (error) {
+          localStorage.removeItem(TOKEN_KEY);
+          setMessage("error", error instanceof Error ? error.message : "Session restore failed.");
+        }
       }
 
-      function normalizeText(value) {
-        return String(value || "")
-          .toLowerCase()
-          .trim()
-          .replace(/\s+/g, " ");
-      }
+      loadSavedTheme();
 
-      function filterDashboardCards(query) {
-        const normalizedQuery = normalizeText(query);
-        const cards = document.querySelectorAll("[data-search-item]");
-
-        cards.forEach(function (card) {
-          const searchableText = normalizeText(
-            card.getAttribute("data-search-item") + " " + card.textContent
-          );
-
-          const isVisible = normalizedQuery.length === 0 || searchableText.includes(normalizedQuery);
-          card.style.display = isVisible ? "" : "none";
+      if (themeBtn) {
+        themeBtn.addEventListener("click", function () {
+          const current = root.getAttribute("data-theme") === "light" ? "light" : "dark";
+          applyTheme(current === "light" ? "dark" : "light");
         });
       }
 
-      function focusSearch() {
-        if (dashboardSearch) {
-          dashboardSearch.focus();
-        }
-      }
+      loginForm.addEventListener("submit", async function (event) {
+        event.preventDefault();
 
-      function bindEvents() {
-        if (menuToggle) {
-          menuToggle.addEventListener("click", toggleSidebar);
-        }
+        const adminId = String(adminIdInput.value || "").trim().toLowerCase();
+        const password = String(passwordInput.value || "").trim();
 
-        if (sidebarOverlay) {
-          sidebarOverlay.addEventListener("click", closeSidebar);
+        clearMessage();
+
+        if (!adminId || !password) {
+          setMessage("error", "Admin ID and password are required.");
+          return;
         }
 
-        if (themeToggle) {
-          themeToggle.addEventListener("click", toggleTheme);
+        try {
+          setLoading(true);
+          setMessage("success", "Checking admin credentials...");
+
+          const session = await login(adminId, password);
+
+          setMessage("success", "Login successful. Loading protected dashboard...");
+          await loadDashboard(session.sessionToken, session.deviceId);
+        } catch (error) {
+          setMessage("error", error instanceof Error ? error.message : "Login failed.");
+        } finally {
+          setLoading(false);
         }
+      });
 
-        if (darkModeBtn) {
-          darkModeBtn.addEventListener("click", function () {
-            applyTheme("dark");
-          });
-        }
-
-        if (lightModeBtn) {
-          lightModeBtn.addEventListener("click", function () {
-            applyTheme("light");
-          });
-        }
-
-        if (dashboardSearch) {
-          dashboardSearch.addEventListener("input", function (event) {
-            filterDashboardCards(event.target.value);
-          });
-        }
-
-        document.addEventListener("keydown", function (event) {
-          const isMac = navigator.platform.toUpperCase().includes("MAC");
-          const commandPressed = isMac ? event.metaKey : event.ctrlKey;
-
-          if (commandPressed && event.key.toLowerCase() === "k") {
-            event.preventDefault();
-            focusSearch();
-          }
-
-          if (event.key === "Escape") {
-            closeSidebar();
-          }
-        });
-
-        window.addEventListener("resize", function () {
-          if (window.innerWidth > 1080) {
-            closeSidebar();
-          }
-        });
-      }
-
-      function init() {
-        const initialTheme = getSavedTheme() || getSystemTheme();
-        applyTheme(initialTheme);
-        bindEvents();
-      }
-
-      init();
+      restoreSessionIfPossible();
     })();
   </script>
 </body>
