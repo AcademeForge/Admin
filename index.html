@@ -2037,558 +2037,574 @@
     </main>
   </section>
 
-  <script>
-    (function () {
-      "use strict";
+<script>
+  (function () {
+    "use strict";
 
-      const CONFIG = {
-        ADMIN_LOGIN_API: "https://afooyyydhlwngzssgqih.supabase.co/functions/v1/admin-auth"
-      };
+    const CONFIG = {
+      ADMIN_LOGIN_API: "https://afooyyydhlwngzssgqih.supabase.co/functions/v1/admin-auth"
+    };
 
-      const STORAGE_KEYS = {
-        TOKEN: "af_admin_session_token",
-        DEVICE: "af_admin_device_id",
-        USER: "af_admin_user",
-        THEME: "academeforge-admin-theme",
-        REMEMBER: "academeforge-admin-remember"
-      };
+    const STORAGE_KEYS = {
+      TOKEN: "af_admin_session_token",
+      DEVICE: "af_admin_device_id",
+      USER: "af_admin_user",
+      THEME: "academeforge-admin-theme",
+      REMEMBER: "academeforge-admin-remember"
+    };
 
-      const els = {
-        pageLoader: document.getElementById("afPageLoader"),
-        authScreen: document.getElementById("afAuthScreen"),
-        dashboardScreen: document.getElementById("afDashboardScreen"),
+    const els = {
+      pageLoader: document.getElementById("afPageLoader"),
+      authScreen: document.getElementById("afAuthScreen"),
+      dashboardScreen: document.getElementById("afDashboardScreen"),
 
-        authThemeToggle: document.getElementById("afAuthThemeToggle"),
-        dashboardThemeToggle: document.getElementById("afDashboardThemeToggle"),
-        settingsThemeButton: document.getElementById("afSettingsThemeButton"),
-        themeStatus: document.getElementById("afThemeStatus"),
+      authThemeToggle: document.getElementById("afAuthThemeToggle"),
+      dashboardThemeToggle: document.getElementById("afDashboardThemeToggle"),
+      settingsThemeButton: document.getElementById("afSettingsThemeButton"),
+      themeStatus: document.getElementById("afThemeStatus"),
 
-        loginForm: document.getElementById("afLoginForm"),
-        adminId: document.getElementById("afAdminId"),
-        adminPassword: document.getElementById("afAdminPassword"),
-        passwordToggle: document.getElementById("afPasswordToggle"),
-        rememberSession: document.getElementById("afRememberSession"),
-        loginButton: document.getElementById("afLoginButton"),
-        authMessage: document.getElementById("afAuthMessage"),
+      loginForm: document.getElementById("afLoginForm"),
+      adminId: document.getElementById("afAdminId"),
+      adminPassword: document.getElementById("afAdminPassword"),
+      passwordToggle: document.getElementById("afPasswordToggle"),
+      rememberSession: document.getElementById("afRememberSession"),
+      loginButton: document.getElementById("afLoginButton"),
+      authMessage: document.getElementById("afAuthMessage"),
 
-        menuToggle: document.getElementById("afMenuToggle"),
-        sidebarOverlay: document.getElementById("afSidebarOverlay"),
+      menuToggle: document.getElementById("afMenuToggle"),
+      sidebarOverlay: document.getElementById("afSidebarOverlay"),
 
-        dashboardSearch: document.getElementById("afDashboardSearch"),
-        categoryFilter: document.getElementById("afCategoryFilter"),
-        actionGrid: document.getElementById("afActionGrid"),
+      dashboardSearch: document.getElementById("afDashboardSearch"),
+      categoryFilter: document.getElementById("afCategoryFilter"),
+      actionGrid: document.getElementById("afActionGrid"),
 
-        logoutButton: document.getElementById("afLogoutButton"),
-        clearSessionButton: document.getElementById("afClearSessionButton"),
+      logoutButton: document.getElementById("afLogoutButton"),
+      clearSessionButton: document.getElementById("afClearSessionButton"),
 
-        adminAvatar: document.getElementById("afAdminAvatar"),
-        adminMiniName: document.getElementById("afAdminMiniName"),
-        adminMiniRole: document.getElementById("afAdminMiniRole"),
-        heroDescription: document.getElementById("afHeroDescription"),
-        currentAdminText: document.getElementById("afCurrentAdminText")
-      };
+      adminAvatar: document.getElementById("afAdminAvatar"),
+      adminMiniName: document.getElementById("afAdminMiniName"),
+      adminMiniRole: document.getElementById("afAdminMiniRole"),
+      heroDescription: document.getElementById("afHeroDescription"),
+      currentAdminText: document.getElementById("afCurrentAdminText")
+    };
 
-      function clean(value) {
-        return String(value || "").trim();
+    function clean(value) {
+      return String(value === null || value === undefined ? "" : value).trim();
+    }
+
+    function normalizeText(value) {
+      return clean(value).toLowerCase().replace(/\s+/g, " ");
+    }
+
+    function safeJsonParse(value, fallback) {
+      try {
+        const parsed = JSON.parse(value);
+        return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : fallback;
+      } catch (_error) {
+        return fallback;
+      }
+    }
+
+    function getPreferredTheme() {
+      const saved = localStorage.getItem(STORAGE_KEYS.THEME);
+
+      if (saved === "light" || saved === "dark") {
+        return saved;
       }
 
-      function normalizeText(value) {
-        return clean(value).toLowerCase().replace(/\s+/g, " ");
+      if (window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches) {
+        return "light";
       }
 
-      function safeJsonParse(value, fallback) {
-        try {
-          const parsed = JSON.parse(value);
-          return parsed && typeof parsed === "object" ? parsed : fallback;
-        } catch (_error) {
-          return fallback;
+      return "dark";
+    }
+
+    function applyTheme(theme) {
+      const nextTheme = theme === "light" ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", nextTheme);
+      localStorage.setItem(STORAGE_KEYS.THEME, nextTheme);
+
+      const icon = nextTheme === "dark" ? "🌙" : "☀️";
+
+      if (els.authThemeToggle) {
+        els.authThemeToggle.textContent = icon;
+      }
+
+      if (els.dashboardThemeToggle) {
+        els.dashboardThemeToggle.textContent = icon;
+      }
+
+      if (els.themeStatus) {
+        els.themeStatus.textContent = nextTheme === "dark" ? "Dark" : "Light";
+      }
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute("data-theme") === "light" ? "light" : "dark";
+      applyTheme(current === "light" ? "dark" : "light");
+    }
+
+    function showElement(element) {
+      if (element) {
+        element.classList.remove("af-hidden");
+      }
+    }
+
+    function hideElement(element) {
+      if (element) {
+        element.classList.add("af-hidden");
+      }
+    }
+
+    function hideLoader() {
+      hideElement(els.pageLoader);
+    }
+
+    function showAuthScreen() {
+      hideElement(els.dashboardScreen);
+      showElement(els.authScreen);
+      hideLoader();
+
+      setTimeout(function () {
+        if (els.adminId) {
+          els.adminId.focus();
+        }
+      }, 80);
+    }
+
+    function showDashboardScreen() {
+      hideElement(els.authScreen);
+      showElement(els.dashboardScreen);
+      hideLoader();
+      renderAdminIdentity();
+    }
+
+    function getStoredToken() {
+      return clean(localStorage.getItem(STORAGE_KEYS.TOKEN));
+    }
+
+    function getStoredDeviceId() {
+      return clean(localStorage.getItem(STORAGE_KEYS.DEVICE));
+    }
+
+    function getStoredUser() {
+      return safeJsonParse(localStorage.getItem(STORAGE_KEYS.USER) || "{}", {});
+    }
+
+    function hasLocalSession() {
+      const token = getStoredToken();
+      const deviceId = getStoredDeviceId();
+
+      return Boolean(token && token.length >= 32 && deviceId);
+    }
+
+    function createDeviceId() {
+      const existing = getStoredDeviceId();
+
+      if (existing) {
+        return existing;
+      }
+
+      const randomPart = new Uint8Array(18);
+
+      if (window.crypto && window.crypto.getRandomValues) {
+        window.crypto.getRandomValues(randomPart);
+      } else {
+        for (let index = 0; index < randomPart.length; index += 1) {
+          randomPart[index] = Math.floor(Math.random() * 256);
         }
       }
 
-      function getPreferredTheme() {
-        const saved = localStorage.getItem(STORAGE_KEYS.THEME);
-        if (saved === "light" || saved === "dark") {
-          return saved;
-        }
+      const hex = Array.from(randomPart)
+        .map(function (item) {
+          return item.toString(16).padStart(2, "0");
+        })
+        .join("");
 
-        if (window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches) {
-          return "light";
-        }
+      const deviceId = "device_" + Date.now().toString(36) + "_" + hex;
+      localStorage.setItem(STORAGE_KEYS.DEVICE, deviceId);
+      return deviceId;
+    }
 
-        return "dark";
+    function clearSession() {
+      localStorage.removeItem(STORAGE_KEYS.TOKEN);
+      localStorage.removeItem(STORAGE_KEYS.DEVICE);
+      localStorage.removeItem(STORAGE_KEYS.USER);
+      sessionStorage.removeItem(STORAGE_KEYS.REMEMBER);
+    }
+
+    function logout() {
+      clearSession();
+      showAuthScreen();
+    }
+
+    function setAuthMessage(type, message) {
+      if (!els.authMessage) {
+        return;
       }
 
-      function applyTheme(theme) {
-        const nextTheme = theme === "light" ? "light" : "dark";
-        document.documentElement.setAttribute("data-theme", nextTheme);
-        localStorage.setItem(STORAGE_KEYS.THEME, nextTheme);
+      const finalType = type === "success" ? "af-success" : "af-error";
+      els.authMessage.className = "af-auth-message af-show " + finalType;
+      els.authMessage.textContent = clean(message);
+    }
 
-        const icon = nextTheme === "dark" ? "🌙" : "☀️";
-
-        if (els.authThemeToggle) {
-          els.authThemeToggle.textContent = icon;
-        }
-
-        if (els.dashboardThemeToggle) {
-          els.dashboardThemeToggle.textContent = icon;
-        }
-
-        if (els.themeStatus) {
-          els.themeStatus.textContent = nextTheme === "dark" ? "Dark" : "Light";
-        }
+    function clearAuthMessage() {
+      if (!els.authMessage) {
+        return;
       }
 
-      function toggleTheme() {
-        const current = document.documentElement.getAttribute("data-theme") === "light" ? "light" : "dark";
-        applyTheme(current === "light" ? "dark" : "light");
+      els.authMessage.className = "af-auth-message";
+      els.authMessage.textContent = "";
+    }
+
+    function setLoginLoading(isLoading) {
+      if (!els.loginButton) {
+        return;
       }
 
-      function showElement(element) {
-        if (element) {
-          element.classList.remove("af-hidden");
-        }
+      els.loginButton.disabled = Boolean(isLoading);
+      els.loginButton.textContent = isLoading ? "Verifying admin..." : "Login & Open Dashboard";
+    }
+
+    function getInitials(name) {
+      const cleaned = clean(name);
+
+      if (!cleaned) {
+        return "AF";
       }
 
-      function hideElement(element) {
-        if (element) {
-          element.classList.add("af-hidden");
-        }
+      const parts = cleaned.split(/\s+/).filter(Boolean);
+
+      if (parts.length === 1) {
+        return parts[0].slice(0, 2).toUpperCase();
       }
 
-      function hideLoader() {
-        hideElement(els.pageLoader);
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+
+    function renderAdminIdentity() {
+      const user = getStoredUser();
+
+      const adminName =
+        clean(user.full_name) ||
+        clean(user.name) ||
+        clean(user.admin_id) ||
+        "Admin";
+
+      const adminRole =
+        clean(user.role) ||
+        "Active Session";
+
+      const adminEmail =
+        clean(user.email) ||
+        "admin session";
+
+      if (els.adminAvatar) {
+        els.adminAvatar.textContent = getInitials(adminName);
       }
 
-      function showAuthScreen() {
-        hideElement(els.dashboardScreen);
-        showElement(els.authScreen);
-        hideLoader();
-
-        setTimeout(function () {
-          if (els.adminId) {
-            els.adminId.focus();
-          }
-        }, 80);
+      if (els.adminMiniName) {
+        els.adminMiniName.textContent = adminName;
       }
 
-      function showDashboardScreen() {
-        hideElement(els.authScreen);
-        showElement(els.dashboardScreen);
-        hideLoader();
-        renderAdminIdentity();
+      if (els.adminMiniRole) {
+        els.adminMiniRole.textContent = adminRole;
       }
 
-      function getStoredToken() {
-        return clean(localStorage.getItem(STORAGE_KEYS.TOKEN));
+      if (els.heroDescription) {
+        els.heroDescription.textContent =
+          "Logged in as " + adminName + " (" + adminEmail + "). Manage modules from this frontend dashboard; real records should be fetched through protected backend APIs.";
       }
 
-      function getStoredDeviceId() {
-        return clean(localStorage.getItem(STORAGE_KEYS.DEVICE));
+      if (els.currentAdminText) {
+        els.currentAdminText.textContent =
+          "Current session belongs to " + adminName + ". Data access must still be verified by backend APIs.";
       }
+    }
 
-      function getStoredUser() {
-        return safeJsonParse(localStorage.getItem(STORAGE_KEYS.USER) || "{}", {});
-      }
-
-      function hasLocalSession() {
-        const token = getStoredToken();
-        const deviceId = getStoredDeviceId();
-
-        return Boolean(token && token.length >= 32 && deviceId);
-      }
-
-      function createDeviceId() {
-        const existing = getStoredDeviceId();
-
-        if (existing) {
-          return existing;
-        }
-
-        const randomPart = new Uint8Array(18);
-
-        if (window.crypto && window.crypto.getRandomValues) {
-          window.crypto.getRandomValues(randomPart);
-        } else {
-          for (let index = 0; index < randomPart.length; index += 1) {
-            randomPart[index] = Math.floor(Math.random() * 256);
-          }
-        }
-
-        const hex = Array.from(randomPart)
-          .map(function (item) {
-            return item.toString(16).padStart(2, "0");
-          })
-          .join("");
-
-        const deviceId = "device_" + Date.now().toString(36) + "_" + hex;
-        localStorage.setItem(STORAGE_KEYS.DEVICE, deviceId);
-        return deviceId;
-      }
-
-      function clearSession() {
-        localStorage.removeItem(STORAGE_KEYS.TOKEN);
-        localStorage.removeItem(STORAGE_KEYS.DEVICE);
-        localStorage.removeItem(STORAGE_KEYS.USER);
-      }
-
-      function logout() {
-        clearSession();
-        showAuthScreen();
-      }
-
-      function setAuthMessage(type, message) {
-        if (!els.authMessage) {
-          return;
-        }
-
-        const finalType = type === "success" ? "af-success" : "af-error";
-        els.authMessage.className = "af-auth-message af-show " + finalType;
-        els.authMessage.textContent = message;
-      }
-
-      function clearAuthMessage() {
-        if (!els.authMessage) {
-          return;
-        }
-
-        els.authMessage.className = "af-auth-message";
-        els.authMessage.textContent = "";
-      }
-
-      function setLoginLoading(isLoading) {
-        if (!els.loginButton) {
-          return;
-        }
-
-        els.loginButton.disabled = isLoading;
-        els.loginButton.textContent = isLoading ? "Verifying admin..." : "Login & Open Dashboard";
-      }
-
-      function getInitials(name) {
-        const cleaned = clean(name);
-
-        if (!cleaned) {
-          return "AF";
-        }
-
-        const parts = cleaned.split(/\s+/).filter(Boolean);
-
-        if (parts.length === 1) {
-          return parts[0].slice(0, 2).toUpperCase();
-        }
-
-        return (parts[0][0] + parts[1][0]).toUpperCase();
-      }
-
-      function renderAdminIdentity() {
-        const user = getStoredUser();
-
-        const adminName =
-          clean(user.full_name) ||
-          clean(user.name) ||
-          clean(user.admin_id) ||
-          "Admin";
-
-        const adminRole =
-          clean(user.role) ||
-          "Active Session";
-
-        const adminEmail =
-          clean(user.email) ||
-          "admin session";
-
-        if (els.adminAvatar) {
-          els.adminAvatar.textContent = getInitials(adminName);
-        }
-
-        if (els.adminMiniName) {
-          els.adminMiniName.textContent = adminName;
-        }
-
-        if (els.adminMiniRole) {
-          els.adminMiniRole.textContent = adminRole;
-        }
-
-        if (els.heroDescription) {
-          els.heroDescription.textContent =
-            "Logged in as " + adminName + " (" + adminEmail + "). Manage modules from this frontend dashboard; real records should be fetched through protected backend APIs.";
-        }
-
-        if (els.currentAdminText) {
-          els.currentAdminText.textContent =
-            "Current session belongs to " + adminName + ". Data access must still be verified by backend APIs.";
-        }
-      }
-
-      function extractLoginResponse(payload) {
-        if (!payload || typeof payload !== "object") {
-          return {
-            ok: false,
-            message: "Invalid login response."
-          };
-        }
-
-        const token =
-          clean(payload.session_token) ||
-          clean(payload.token) ||
-          clean(payload.admin_token) ||
-          clean(payload.access_token);
-
-        const deviceId =
-          clean(payload.device_id) ||
-          getStoredDeviceId();
-
-        const user =
-          payload.admin && typeof payload.admin === "object"
-            ? payload.admin
-            : payload.user && typeof payload.user === "object"
-              ? payload.user
-              : {
-                  admin_id: payload.admin_id,
-                  email: payload.email,
-                  full_name: payload.full_name,
-                  role: payload.role
-                };
-
+    function extractLoginResponse(payload) {
+      if (!payload || typeof payload !== "object") {
         return {
-          ok: Boolean(payload.ok !== false && token),
-          message: clean(payload.message) || "",
-          token,
-          deviceId,
-          user
+          ok: false,
+          message: "Invalid login response.",
+          token: "",
+          deviceId: "",
+          user: {}
         };
       }
 
-      async function loginAdmin(adminId, password) {
-        const deviceId = createDeviceId();
+      const token =
+        clean(payload.session_token) ||
+        clean(payload.token) ||
+        clean(payload.admin_token) ||
+        clean(payload.access_token);
 
-        const response = await fetch(CONFIG.ADMIN_LOGIN_API, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-device-id": deviceId
-          },
-          body: JSON.stringify({
-            admin_id: adminId,
-            password: password,
-            device_id: deviceId
-          }),
-          cache: "no-store"
-        });
+      const deviceId =
+        clean(payload.device_id) ||
+        getStoredDeviceId();
 
-        const responseText = await response.text();
-        let payload = {};
+      const user =
+        payload.admin && typeof payload.admin === "object"
+          ? payload.admin
+          : payload.user && typeof payload.user === "object"
+            ? payload.user
+            : {
+                admin_id: payload.admin_id,
+                email: payload.email,
+                full_name: payload.full_name,
+                role: payload.role,
+                status: payload.status
+              };
 
-        try {
-          payload = responseText ? JSON.parse(responseText) : {};
-        } catch (_error) {
-          throw new Error("Login API returned invalid response.");
-        }
+      return {
+        ok: Boolean(payload.ok !== false && token),
+        message: clean(payload.message),
+        token,
+        deviceId,
+        user
+      };
+    }
 
-        if (!response.ok) {
-          throw new Error(clean(payload.message) || "Admin login failed.");
-        }
+    async function loginAdmin(adminId, password) {
+      const deviceId = createDeviceId();
 
-        const extracted = extractLoginResponse(payload);
+      const requestBody = {
+        admin_id: adminId,
+        login_id: adminId,
+        id: adminId,
+        username: adminId,
+        password: password,
+        pass: password,
+        device_id: deviceId,
+        device_name: navigator.userAgent || "Admin Browser"
+      };
 
-        if (!extracted.ok || !extracted.token) {
-          throw new Error(extracted.message || "Login successful but session token missing.");
-        }
+      const response = await fetch(CONFIG.ADMIN_LOGIN_API, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify(requestBody),
+        cache: "no-store",
+        mode: "cors",
+        credentials: "omit"
+      });
 
-        localStorage.setItem(STORAGE_KEYS.TOKEN, extracted.token);
-        localStorage.setItem(STORAGE_KEYS.DEVICE, extracted.deviceId || deviceId);
-        localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(extracted.user || {}));
+      const responseText = await response.text();
+      let payload = {};
 
-        return extracted;
+      try {
+        payload = responseText ? JSON.parse(responseText) : {};
+      } catch (_error) {
+        throw new Error("Login API returned invalid JSON response.");
       }
 
-      async function handleLoginSubmit(event) {
-        event.preventDefault();
-
-        clearAuthMessage();
-
-        const adminId = clean(els.adminId ? els.adminId.value : "");
-        const password = clean(els.adminPassword ? els.adminPassword.value : "");
-
-        if (!adminId) {
-          setAuthMessage("error", "Enter admin ID.");
-          return;
-        }
-
-        if (!password) {
-          setAuthMessage("error", "Enter password.");
-          return;
-        }
-
-        try {
-          setLoginLoading(true);
-
-          await loginAdmin(adminId, password);
-
-          if (els.rememberSession && !els.rememberSession.checked) {
-            sessionStorage.setItem(STORAGE_KEYS.REMEMBER, "session-only");
-          } else {
-            sessionStorage.removeItem(STORAGE_KEYS.REMEMBER);
-          }
-
-          setAuthMessage("success", "Login successful. Opening dashboard...");
-          setTimeout(showDashboardScreen, 280);
-        } catch (error) {
-          setAuthMessage("error", error instanceof Error ? error.message : "Login failed.");
-        } finally {
-          setLoginLoading(false);
-        }
+      if (!response.ok) {
+        throw new Error(clean(payload.message) || "Admin login failed.");
       }
 
-      function togglePasswordVisibility() {
-        if (!els.adminPassword || !els.passwordToggle) {
-          return;
-        }
+      const extracted = extractLoginResponse(payload);
 
-        const isPassword = els.adminPassword.type === "password";
-        els.adminPassword.type = isPassword ? "text" : "password";
-        els.passwordToggle.textContent = isPassword ? "🔓" : "🔒";
+      if (!extracted.ok || !extracted.token) {
+        throw new Error(extracted.message || "Login successful but session token missing.");
       }
 
-      function closeSidebar() {
-        document.body.classList.remove("af-sidebar-open");
+      localStorage.setItem(STORAGE_KEYS.TOKEN, extracted.token);
+      localStorage.setItem(STORAGE_KEYS.DEVICE, extracted.deviceId || deviceId);
+      localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(extracted.user || {}));
+
+      return extracted;
+    }
+
+    async function handleLoginSubmit(event) {
+      event.preventDefault();
+
+      clearAuthMessage();
+
+      const adminId = clean(els.adminId ? els.adminId.value : "");
+      const password = clean(els.adminPassword ? els.adminPassword.value : "");
+
+      if (!adminId) {
+        setAuthMessage("error", "Enter admin ID.");
+        return;
       }
 
-      function toggleSidebar() {
-        document.body.classList.toggle("af-sidebar-open");
+      if (!password) {
+        setAuthMessage("error", "Enter password.");
+        return;
       }
 
-      function filterModules() {
-        const query = normalizeText(els.dashboardSearch ? els.dashboardSearch.value : "");
-        const category = els.categoryFilter ? els.categoryFilter.value : "all";
+      try {
+        setLoginLoading(true);
 
-        document.querySelectorAll(".af-action-card").forEach(function (card) {
-          const cardCategory = card.getAttribute("data-category") || "";
-          const searchText = normalizeText((card.getAttribute("data-search-item") || "") + " " + card.textContent);
+        await loginAdmin(adminId, password);
 
-          const categoryMatches = category === "all" || cardCategory === category;
-          const queryMatches = !query || searchText.includes(query);
-
-          card.style.display = categoryMatches && queryMatches ? "" : "none";
-        });
-      }
-
-      function copyText(value, button) {
-        const text = clean(value);
-
-        if (!text) {
-          return;
-        }
-
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(text).then(function () {
-            const oldText = button.textContent;
-            button.textContent = "Copied";
-            setTimeout(function () {
-              button.textContent = oldText;
-            }, 900);
-          }).catch(function () {
-            window.prompt("Copy this path:", text);
-          });
+        if (els.rememberSession && !els.rememberSession.checked) {
+          sessionStorage.setItem(STORAGE_KEYS.REMEMBER, "session-only");
         } else {
-          window.prompt("Copy this path:", text);
+          sessionStorage.removeItem(STORAGE_KEYS.REMEMBER);
         }
+
+        setAuthMessage("success", "Login successful. Opening dashboard...");
+        setTimeout(showDashboardScreen, 280);
+      } catch (error) {
+        setAuthMessage("error", error instanceof Error ? error.message : "Login failed.");
+      } finally {
+        setLoginLoading(false);
+      }
+    }
+
+    function togglePasswordVisibility() {
+      if (!els.adminPassword || !els.passwordToggle) {
+        return;
       }
 
-      function handleHashOnlyLink(event) {
-        const link = event.target.closest("a[href='#']");
+      const isPassword = els.adminPassword.type === "password";
+      els.adminPassword.type = isPassword ? "text" : "password";
+      els.passwordToggle.textContent = isPassword ? "🔓" : "🔒";
+    }
 
-        if (!link) {
+    function closeSidebar() {
+      document.body.classList.remove("af-sidebar-open");
+    }
+
+    function toggleSidebar() {
+      document.body.classList.toggle("af-sidebar-open");
+    }
+
+    function filterModules() {
+      const query = normalizeText(els.dashboardSearch ? els.dashboardSearch.value : "");
+      const category = els.categoryFilter ? els.categoryFilter.value : "all";
+
+      document.querySelectorAll(".af-action-card").forEach(function (card) {
+        const cardCategory = card.getAttribute("data-category") || "";
+        const searchText = normalizeText((card.getAttribute("data-search-item") || "") + " " + card.textContent);
+
+        const categoryMatches = category === "all" || cardCategory === category;
+        const queryMatches = !query || searchText.includes(query);
+
+        card.style.display = categoryMatches && queryMatches ? "" : "none";
+      });
+    }
+
+    function copyText(value, button) {
+      const text = clean(value);
+
+      if (!text) {
+        return;
+      }
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () {
+          const oldText = button.textContent;
+          button.textContent = "Copied";
+
+          setTimeout(function () {
+            button.textContent = oldText;
+          }, 900);
+        }).catch(function () {
+          window.prompt("Copy this path:", text);
+        });
+      } else {
+        window.prompt("Copy this path:", text);
+      }
+    }
+
+    function handleHashOnlyLink(event) {
+      const link = event.target.closest("a[href='#']");
+
+      if (!link) {
+        return;
+      }
+
+      event.preventDefault();
+
+      if (link.classList.contains("af-action-card")) {
+        const titleElement = link.querySelector(".af-action-title");
+        const title = titleElement ? clean(titleElement.textContent) : "This module";
+        window.alert(title + " page is not connected yet. Replace href=\"#\" with the module folder path when ready.");
+      }
+    }
+
+    function bindEvents() {
+      if (els.authThemeToggle) {
+        els.authThemeToggle.addEventListener("click", toggleTheme);
+      }
+
+      if (els.dashboardThemeToggle) {
+        els.dashboardThemeToggle.addEventListener("click", toggleTheme);
+      }
+
+      if (els.settingsThemeButton) {
+        els.settingsThemeButton.addEventListener("click", toggleTheme);
+      }
+
+      if (els.loginForm) {
+        els.loginForm.addEventListener("submit", handleLoginSubmit);
+      }
+
+      if (els.passwordToggle) {
+        els.passwordToggle.addEventListener("click", togglePasswordVisibility);
+      }
+
+      if (els.menuToggle) {
+        els.menuToggle.addEventListener("click", toggleSidebar);
+      }
+
+      if (els.sidebarOverlay) {
+        els.sidebarOverlay.addEventListener("click", closeSidebar);
+      }
+
+      if (els.dashboardSearch) {
+        els.dashboardSearch.addEventListener("input", filterModules);
+      }
+
+      if (els.categoryFilter) {
+        els.categoryFilter.addEventListener("change", filterModules);
+      }
+
+      if (els.logoutButton) {
+        els.logoutButton.addEventListener("click", logout);
+      }
+
+      if (els.clearSessionButton) {
+        els.clearSessionButton.addEventListener("click", logout);
+      }
+
+      document.addEventListener("click", function (event) {
+        const copyButton = event.target.closest("[data-copy]");
+
+        if (copyButton) {
+          copyText(copyButton.getAttribute("data-copy"), copyButton);
           return;
         }
 
-        event.preventDefault();
+        handleHashOnlyLink(event);
+      });
 
-        if (link.classList.contains("af-action-card")) {
-          const titleElement = link.querySelector(".af-action-title");
-          const title = titleElement ? clean(titleElement.textContent) : "This module";
-          window.alert(title + " page is not connected yet. Replace href=\"#\" with the module folder path when ready.");
+      document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") {
+          closeSidebar();
         }
-      }
+      });
+    }
 
-      function bindEvents() {
-        if (els.authThemeToggle) {
-          els.authThemeToggle.addEventListener("click", toggleTheme);
+    function boot() {
+      applyTheme(getPreferredTheme());
+      bindEvents();
+
+      window.setTimeout(function () {
+        if (hasLocalSession()) {
+          showDashboardScreen();
+        } else {
+          showAuthScreen();
         }
+      }, 220);
+    }
 
-        if (els.dashboardThemeToggle) {
-          els.dashboardThemeToggle.addEventListener("click", toggleTheme);
-        }
-
-        if (els.settingsThemeButton) {
-          els.settingsThemeButton.addEventListener("click", toggleTheme);
-        }
-
-        if (els.loginForm) {
-          els.loginForm.addEventListener("submit", handleLoginSubmit);
-        }
-
-        if (els.passwordToggle) {
-          els.passwordToggle.addEventListener("click", togglePasswordVisibility);
-        }
-
-        if (els.menuToggle) {
-          els.menuToggle.addEventListener("click", toggleSidebar);
-        }
-
-        if (els.sidebarOverlay) {
-          els.sidebarOverlay.addEventListener("click", closeSidebar);
-        }
-
-        if (els.dashboardSearch) {
-          els.dashboardSearch.addEventListener("input", filterModules);
-        }
-
-        if (els.categoryFilter) {
-          els.categoryFilter.addEventListener("change", filterModules);
-        }
-
-        if (els.logoutButton) {
-          els.logoutButton.addEventListener("click", logout);
-        }
-
-        if (els.clearSessionButton) {
-          els.clearSessionButton.addEventListener("click", logout);
-        }
-
-        document.addEventListener("click", function (event) {
-          const copyButton = event.target.closest("[data-copy]");
-
-          if (copyButton) {
-            copyText(copyButton.getAttribute("data-copy"), copyButton);
-            return;
-          }
-
-          handleHashOnlyLink(event);
-        });
-
-        document.addEventListener("keydown", function (event) {
-          if (event.key === "Escape") {
-            closeSidebar();
-          }
-        });
-      }
-
-      function boot() {
-        applyTheme(getPreferredTheme());
-        bindEvents();
-
-        window.setTimeout(function () {
-          if (hasLocalSession()) {
-            showDashboardScreen();
-          } else {
-            showAuthScreen();
-          }
-        }, 220);
-      }
-
-      boot();
-    })();
-  </script>
+    boot();
+  })();
+</script>
 </body>
 </html>
