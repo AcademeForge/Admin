@@ -586,10 +586,25 @@
 
           throw new Error(message);
         }
+if (!contentType.includes("text/html")) {
+  console.error("Dashboard invalid response:", {
+    status: response.status,
+    ok: response.ok,
+    contentType: contentType,
+    body: text
+  });
 
-        if (!contentType.includes("text/html")) {
-          throw new Error("Invalid dashboard response.");
-        }
+  let message = "Invalid dashboard response.";
+
+  try {
+    const parsed = JSON.parse(text);
+    message = parsed.message || parsed.error || message;
+  } catch (error) {
+    message = text || message;
+  }
+
+  throw new Error(message);
+}
 
         dashboardMount.innerHTML = text;
         body.classList.add("dashboard-loaded");
