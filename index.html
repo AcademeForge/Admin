@@ -421,6 +421,28 @@
         font-size: 28px;
       }
     }
+    .dashboard-mount {
+  width: 100%;
+  min-height: 100vh;
+  display: none;
+}
+
+.dashboard-mount.active {
+  display: block;
+}
+
+body.dashboard-loaded {
+  display: block;
+  padding: 0;
+}
+
+body.dashboard-loaded .login-shell {
+  display: none;
+}
+
+body.dashboard-loaded .dashboard-mount {
+  display: block;
+}
   </style>
 </head>
 
