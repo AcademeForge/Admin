@@ -495,207 +495,323 @@
 
   <section class="dashboard-mount" id="dashboardMount"></section>
 
-  <script>
-    (function () {
-      "use strict";
+ <script>
+  (function () {
+    "use strict";
 
-      const AUTH_ENDPOINT = "https://afooyyydhlwngzssgqih.supabase.co/functions/v1/admin-auth";
-      const DASHBOARD_ENDPOINT = "https://afooyyydhlwngzssgqih.supabase.co/functions/v1/admin-dashboard";
+    const AUTH_ENDPOINT = "https://afooyyydhlwngzssgqih.supabase.co/functions/v1/admin-auth";
+    const DASHBOARD_ENDPOINT = "https://afooyyydhlwngzssgqih.supabase.co/functions/v1/admin-dashboard";
 
-      const root = document.documentElement;
-      const body = document.body;
-      const themeBtn = document.getElementById("themeBtn");
-      const loginForm = document.getElementById("loginForm");
-      const adminIdInput = document.getElementById("adminId");
-      const passwordInput = document.getElementById("password");
-      const submitBtn = document.getElementById("submitBtn");
-      const messageBox = document.getElementById("messageBox");
-      const dashboardMount = document.getElementById("dashboardMount");
+    const root = document.documentElement;
+    const body = document.body;
+    const themeBtn = document.getElementById("themeBtn");
+    const loginForm = document.getElementById("loginForm");
+    const adminIdInput = document.getElementById("adminId");
+    const passwordInput = document.getElementById("password");
+    const submitBtn = document.getElementById("submitBtn");
+    const messageBox = document.getElementById("messageBox");
+    const dashboardMount = document.getElementById("dashboardMount");
 
-      const THEME_KEY = "academeforge-admin-login-theme";
-      const TOKEN_KEY = "af_admin_session_token";
-      const DEVICE_KEY = "af_admin_device_id";
+    const THEME_KEY = "academeforge-admin-login-theme";
+    const TOKEN_KEY = "af_admin_session_token";
+    const DEVICE_KEY = "af_admin_device_id";
 
-      function getDeviceId() {
-        let id = localStorage.getItem(DEVICE_KEY);
+    function safeLocalStorageGet(key) {
+      try {
+        return localStorage.getItem(key);
+      } catch (error) {
+        return null;
+      }
+    }
 
-        if (!id) {
-          id = "web_" + crypto.randomUUID();
-          localStorage.setItem(DEVICE_KEY, id);
-        }
+    function safeLocalStorageSet(key, value) {
+      try {
+        localStorage.setItem(key, value);
+      } catch (error) {
+        console.error("LocalStorage set failed:", error);
+      }
+    }
 
-        return id;
+    function safeLocalStorageRemove(key) {
+      try {
+        localStorage.removeItem(key);
+      } catch (error) {
+        console.error("LocalStorage remove failed:", error);
+      }
+    }
+
+    function createFallbackUuid() {
+      if (window.crypto && typeof window.crypto.randomUUID === "function") {
+        return window.crypto.randomUUID();
       }
 
-      function setMessage(type, text) {
-        messageBox.className = "message show " + type;
-        messageBox.textContent = text;
-      }
+      const bytes = new Uint8Array(16);
 
-      function clearMessage() {
-        messageBox.className = "message";
-        messageBox.textContent = "";
-      }
-
-      function setLoading(isLoading) {
-        submitBtn.disabled = isLoading;
-        submitBtn.textContent = isLoading ? "Verifying..." : "Login & Load Dashboard";
-      }
-
-      function applyTheme(theme) {
-        const normalized = theme === "light" ? "light" : "dark";
-        root.setAttribute("data-theme", normalized);
-        localStorage.setItem(THEME_KEY, normalized);
-
-        if (themeBtn) {
-          themeBtn.textContent = normalized === "dark" ? "🌙" : "☀️";
-        }
-      }
-
-      function loadSavedTheme() {
-        const saved = localStorage.getItem(THEME_KEY);
-        applyTheme(saved === "light" || saved === "dark" ? saved : "dark");
-      }
-
-      async function loadDashboard(sessionToken, deviceId) {
-        const response = await fetch(DASHBOARD_ENDPOINT, {
-          method: "GET",
-          headers: {
-            "x-admin-token": sessionToken,
-            "x-device-id": deviceId
-          },
-          cache: "no-store"
-        });
-
-        const contentType = response.headers.get("content-type") || "";
-        const text = await response.text();
-
-        if (!response.ok) {
-          localStorage.removeItem(TOKEN_KEY);
-
-          let message = "Unable to load dashboard.";
-
-          if (contentType.includes("application/json")) {
-            try {
-              const parsed = JSON.parse(text);
-              message = parsed.message || message;
-            } catch (error) {
-              message = "Unable to load dashboard.";
-            }
-          }
-
-          throw new Error(message);
-        }
-if (!contentType.includes("text/html")) {
-  console.error("Dashboard invalid response:", {
-    status: response.status,
-    ok: response.ok,
-    contentType: contentType,
-    body: text
-  });
-
-  let message = "Invalid dashboard response.";
-
-  try {
-    const parsed = JSON.parse(text);
-    message = parsed.message || parsed.error || message;
-  } catch (error) {
-    message = text || message;
-  }
-
-  throw new Error(message);
-}
-
-        dashboardMount.innerHTML = text;
-        body.classList.add("dashboard-loaded");
-        dashboardMount.classList.add("active");
-
-        const scripts = dashboardMount.querySelectorAll("script");
-
-        scripts.forEach(function (oldScript) {
-          const newScript = document.createElement("script");
-
-          Array.from(oldScript.attributes).forEach(function (attr) {
-            newScript.setAttribute(attr.name, attr.value);
-          });
-
-          newScript.textContent = oldScript.textContent;
-          oldScript.parentNode.replaceChild(newScript, oldScript);
-        });
-      }
-
-      async function login(adminId, password) {
-        const deviceId = getDeviceId();
-
-        const response = await fetch(AUTH_ENDPOINT, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            admin_id: adminId,
-            password: password,
-            device_id: deviceId,
-            device_name: navigator.userAgent
-          }),
-          cache: "no-store"
-        });
-
-        const data = await response.json().catch(function () {
-          return {
-            ok: false,
-            message: "Invalid server response."
-          };
-        });
-
-        if (!response.ok || !data.ok) {
-          throw new Error(data.message || "Admin login failed.");
-        }
-
-        if (!data.session_token) {
-          throw new Error("Session token missing.");
-        }
-
-        localStorage.setItem(TOKEN_KEY, data.session_token);
-        localStorage.setItem(DEVICE_KEY, data.device_id || deviceId);
-
-        return {
-          sessionToken: data.session_token,
-          deviceId: data.device_id || deviceId
-        };
-      }
-
-      async function restoreSessionIfPossible() {
-        const token = localStorage.getItem(TOKEN_KEY);
-        const deviceId = localStorage.getItem(DEVICE_KEY);
-
-        if (!token || !deviceId) {
-          return;
-        }
-
-        try {
-          setMessage("success", "Restoring secure admin session...");
-          await loadDashboard(token, deviceId);
-        } catch (error) {
-          localStorage.removeItem(TOKEN_KEY);
-          setMessage("error", error instanceof Error ? error.message : "Session restore failed.");
+      if (window.crypto && typeof window.crypto.getRandomValues === "function") {
+        window.crypto.getRandomValues(bytes);
+      } else {
+        for (let i = 0; i < bytes.length; i += 1) {
+          bytes[i] = Math.floor(Math.random() * 256);
         }
       }
 
-      loadSavedTheme();
+      bytes[6] = (bytes[6] & 0x0f) | 0x40;
+      bytes[8] = (bytes[8] & 0x3f) | 0x80;
+
+      const hex = Array.from(bytes).map(function (byte) {
+        return byte.toString(16).padStart(2, "0");
+      }).join("");
+
+      return [
+        hex.slice(0, 8),
+        hex.slice(8, 12),
+        hex.slice(12, 16),
+        hex.slice(16, 20),
+        hex.slice(20)
+      ].join("-");
+    }
+
+    function getDeviceId() {
+      let id = safeLocalStorageGet(DEVICE_KEY);
+
+      if (!id) {
+        id = "web_" + createFallbackUuid();
+        safeLocalStorageSet(DEVICE_KEY, id);
+      }
+
+      return id;
+    }
+
+    function setMessage(type, text) {
+      if (!messageBox) {
+        return;
+      }
+
+      messageBox.className = "message show " + type;
+      messageBox.textContent = String(text || "");
+    }
+
+    function clearMessage() {
+      if (!messageBox) {
+        return;
+      }
+
+      messageBox.className = "message";
+      messageBox.textContent = "";
+    }
+
+    function setLoading(isLoading) {
+      if (!submitBtn) {
+        return;
+      }
+
+      submitBtn.disabled = Boolean(isLoading);
+      submitBtn.textContent = isLoading ? "Verifying..." : "Login & Load Dashboard";
+    }
+
+    function applyTheme(theme) {
+      const normalized = theme === "light" ? "light" : "dark";
+
+      root.setAttribute("data-theme", normalized);
+      safeLocalStorageSet(THEME_KEY, normalized);
 
       if (themeBtn) {
-        themeBtn.addEventListener("click", function () {
-          const current = root.getAttribute("data-theme") === "light" ? "light" : "dark";
-          applyTheme(current === "light" ? "dark" : "light");
+        themeBtn.textContent = normalized === "dark" ? "🌙" : "☀️";
+      }
+    }
+
+    function loadSavedTheme() {
+      const saved = safeLocalStorageGet(THEME_KEY);
+      applyTheme(saved === "light" || saved === "dark" ? saved : "dark");
+    }
+
+    function parseJsonSafely(text) {
+      try {
+        return JSON.parse(text);
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function looksLikeHtmlDocument(text, contentType) {
+      const normalizedContentType = String(contentType || "").toLowerCase();
+      const normalizedText = String(text || "").trim().toLowerCase();
+
+      return (
+        normalizedContentType.includes("text/html") ||
+        normalizedText.startsWith("<!doctype html") ||
+        normalizedText.startsWith("<html") ||
+        normalizedText.includes("<head") ||
+        normalizedText.includes("<body")
+      );
+    }
+
+    function executeInjectedScripts(container) {
+      const scripts = container.querySelectorAll("script");
+
+      scripts.forEach(function (oldScript) {
+        const newScript = document.createElement("script");
+
+        Array.from(oldScript.attributes).forEach(function (attr) {
+          newScript.setAttribute(attr.name, attr.value);
         });
+
+        newScript.textContent = oldScript.textContent || "";
+        oldScript.parentNode.replaceChild(newScript, oldScript);
+      });
+    }
+
+    function mountDashboard(htmlText) {
+      if (!dashboardMount) {
+        throw new Error("Dashboard mount element missing.");
       }
 
+      clearMessage();
+
+      dashboardMount.innerHTML = htmlText;
+      body.classList.add("dashboard-loaded");
+      dashboardMount.classList.add("active");
+
+      executeInjectedScripts(dashboardMount);
+
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: "instant"
+      });
+    }
+
+    async function loadDashboard(sessionToken, deviceId) {
+      if (!sessionToken || String(sessionToken).trim().length < 32) {
+        throw new Error("Admin session token missing.");
+      }
+
+      if (!deviceId || String(deviceId).trim().length < 8) {
+        throw new Error("Admin device ID missing.");
+      }
+
+      const response = await fetch(DASHBOARD_ENDPOINT, {
+        method: "GET",
+        headers: {
+          "x-admin-token": String(sessionToken),
+          "x-device-id": String(deviceId),
+          "Accept": "text/html, application/json"
+        },
+        cache: "no-store",
+        credentials: "omit"
+      });
+
+      const contentType = response.headers.get("content-type") || "";
+      const text = await response.text();
+
+      if (!response.ok) {
+        safeLocalStorageRemove(TOKEN_KEY);
+
+        const parsed = parseJsonSafely(text);
+        const message =
+          parsed && (parsed.message || parsed.error)
+            ? parsed.message || parsed.error
+            : "Unable to load dashboard.";
+
+        throw new Error(message);
+      }
+
+      if (!looksLikeHtmlDocument(text, contentType)) {
+        const parsed = parseJsonSafely(text);
+        const message =
+          parsed && (parsed.message || parsed.error)
+            ? parsed.message || parsed.error
+            : "Invalid dashboard response.";
+
+        console.error("Invalid dashboard response:", {
+          status: response.status,
+          ok: response.ok,
+          contentType: contentType,
+          preview: String(text || "").slice(0, 500)
+        });
+
+        throw new Error(message);
+      }
+
+      mountDashboard(text);
+    }
+
+    async function login(adminId, password) {
+      const deviceId = getDeviceId();
+
+      const response = await fetch(AUTH_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify({
+          admin_id: adminId,
+          password: password,
+          device_id: deviceId,
+          device_name: navigator.userAgent || "Unknown browser"
+        }),
+        cache: "no-store",
+        credentials: "omit"
+      });
+
+      const text = await response.text();
+      const data = parseJsonSafely(text) || {
+        ok: false,
+        message: "Invalid server response."
+      };
+
+      if (!response.ok || !data.ok) {
+        throw new Error(data.message || data.error || "Admin login failed.");
+      }
+
+      if (!data.session_token) {
+        throw new Error("Session token missing.");
+      }
+
+      const finalDeviceId = data.device_id || deviceId;
+
+      safeLocalStorageSet(TOKEN_KEY, data.session_token);
+      safeLocalStorageSet(DEVICE_KEY, finalDeviceId);
+
+      return {
+        sessionToken: data.session_token,
+        deviceId: finalDeviceId
+      };
+    }
+
+    async function restoreSessionIfPossible() {
+      const token = safeLocalStorageGet(TOKEN_KEY);
+      const deviceId = safeLocalStorageGet(DEVICE_KEY);
+
+      if (!token || !deviceId) {
+        return;
+      }
+
+      try {
+        setMessage("success", "Restoring secure admin session...");
+        await loadDashboard(token, deviceId);
+      } catch (error) {
+        safeLocalStorageRemove(TOKEN_KEY);
+        setMessage("error", error instanceof Error ? error.message : "Session restore failed.");
+      }
+    }
+
+    loadSavedTheme();
+
+    if (themeBtn) {
+      themeBtn.addEventListener("click", function () {
+        const current = root.getAttribute("data-theme") === "light" ? "light" : "dark";
+        applyTheme(current === "light" ? "dark" : "light");
+      });
+    }
+
+    if (loginForm) {
       loginForm.addEventListener("submit", async function (event) {
         event.preventDefault();
 
-        const adminId = String(adminIdInput.value || "").trim().toLowerCase();
-        const password = String(passwordInput.value || "").trim();
+        const adminId = String(adminIdInput && adminIdInput.value ? adminIdInput.value : "").trim().toLowerCase();
+        const password = String(passwordInput && passwordInput.value ? passwordInput.value : "").trim();
 
         clearMessage();
 
@@ -718,9 +834,10 @@ if (!contentType.includes("text/html")) {
           setLoading(false);
         }
       });
+    }
 
-      restoreSessionIfPossible();
-    })();
-  </script>
+    restoreSessionIfPossible();
+  })();
+</script>
 </body>
 </html>
